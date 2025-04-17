@@ -55,13 +55,13 @@ export default function AdminBiblioteca() {
     let [url, setUrl] = useState([{ 'path': '/', 'id': '0' }]);
     let [folders, setFolders] = useState<Folder_data[]>([]);
     let [files, setFiles] = useState<File_data[]>([]);
-    const { push, back } = useRouter();
+    const { replace, back } = useRouter();
 
 
     useEffect(() => {
         if (!isAuthenticated()) {
 
-            push("/login");
+            replace("/login");
         }
         else {
             refreshAuthToken();
@@ -73,11 +73,11 @@ export default function AdminBiblioteca() {
     async function get_group(function_callback: any) {
         let user = await getGroup();
         if (user.groups == 'Scout') {
-            push("/biblioteca");
+            replace("/biblioteca");
             function_callback();
         }
         else if (user.groups == 'Admin') {
-            push("/admin/biblioteca");
+            replace("/admin/biblioteca");
         }
     }
 

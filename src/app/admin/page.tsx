@@ -8,13 +8,13 @@ import { useEffect, useState } from "react";
 
 
 export default function Admin() {
-    const { push } = useRouter();
+    const { replace, push } = useRouter();
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [sidenav, setSidenav] = useState(false);
 
     useEffect(() => {
         if (!isAuthenticated()) {
-            push("/login");
+            replace("/login");
         }
         else {
             refreshAuthToken();
@@ -25,10 +25,10 @@ export default function Admin() {
     async function get_group() {
         let user = await getGroup();
         if (user.groups == 'Scout') {
-            push("/");
+            replace("/");
         }
         else if (user.groups == 'Admin') {
-            push("/admin");
+            replace("/admin");
             update_announcements();
         }
     }
@@ -38,7 +38,6 @@ export default function Admin() {
         if (token)
             request('GET', '/announcement', 'application/json', token, null)
                 .then((announcement_data) => {
-                    console.log(announcement_data);
                     let announcements: Announcement[] = [];
                     announcement_data.forEach((data: any) => {
                         let a_data = {
@@ -85,6 +84,7 @@ export default function Admin() {
                                 <span className="ms-3">Biblioteca Virtual</span>
                             </a>
                         </li>
+                        {/*
                         <li>
                             <a href="/admin/scouts" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg className="h-8 w-8 text-gray-400" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -97,8 +97,8 @@ export default function Admin() {
 
                                 <span className="ms-3">Scouts</span>
                             </a>
-                        </li>
-
+                        </li>*/
+                        }
                         <li>
                             <a href="/admin/anuncios" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg className="w-8 h-8 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@ export default function Admin() {
                             <hr className="my-4 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400" />
                         </li>
                         <li>
-                            <a href="/admin/perfil" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                            <a href="/admin/profile" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -149,7 +149,7 @@ export default function Admin() {
                                 {
                                     //announcement.information
                                 }
-                                <a href={announcement.information} className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                <a href={announcement.information} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     Read more
                                     <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />

@@ -66,13 +66,13 @@ export default function AdminBiblioteca() {
     let [newFileD, setNewFileD] = useState<File | null>(null);
     let [newFileSpinner, setNewFileSpinner] = useState<boolean>(false);
     const [speed_dial, setSpeed_dial] = useState(false);
-    const { push, back } = useRouter();
+    const { back, replace } = useRouter();
 
 
     useEffect(() => {
         if (!isAuthenticated()) {
 
-            push("/login");
+            replace("/login");
         }
         else {
             refreshAuthToken();
@@ -84,10 +84,10 @@ export default function AdminBiblioteca() {
     async function get_group(function_callback: any) {
         let user = await getGroup();
         if (user.groups == 'Scout') {
-            push("/biblioteca");
+            replace("/biblioteca");
         }
         else if (user.groups == 'Admin') {
-            push("/admin/biblioteca");
+            replace("/admin/biblioteca");
             function_callback();
         }
     }
@@ -286,7 +286,7 @@ export default function AdminBiblioteca() {
                                                         </td>
 
                                                         <td className="px-2 py-2 text-center">
-                                                            {new Date(file.created).toLocaleDateString()}
+                                                            {new Date(file.created * 1000).toLocaleDateString()}
                                                         </td>
                                                         <td className="w-full px-2 py-2">
                                                             {file.description}

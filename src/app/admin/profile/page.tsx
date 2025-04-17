@@ -17,7 +17,6 @@ interface User_data {
 export default function Normaluser() {
     const { back, replace } = useRouter();
     const [normaluser, setNormaluser] = useState<User_data>();
-    const [isMounted, setIsMounted] = useState(false);
 
 
     useEffect(() => {
@@ -34,10 +33,10 @@ export default function Normaluser() {
         let user = await getGroup();
         if (user.groups == 'Scout') {
             replace("/profile");
-            update_user();
         }
         else if (user.groups == 'Admin') {
             replace("/admin/profile");
+            update_user();
         }
     }
 
