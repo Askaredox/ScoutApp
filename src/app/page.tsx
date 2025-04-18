@@ -1,8 +1,9 @@
 'use client';
 
-import { Announcement } from "@/utils/interfaces";
+import { Announcement, Announcement_response } from "@/utils/interfaces";
 import { getGroup, isAuthenticated, refreshAuthToken, request } from "@/utils/utils";
 import Cookies from "js-cookie";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -23,7 +24,7 @@ export default function Home() {
   }, []);
 
   async function get_group() {
-    let user = await getGroup();
+    const user = await getGroup();
     if (user.groups == 'Scout') {
       replace("/");
     }
@@ -34,12 +35,12 @@ export default function Home() {
   }
 
   function update_announcements() {
-    let token = Cookies.get('idToken');
+    const token = Cookies.get('idToken');
     if (token)
       request('GET', '/announcement', 'application/json', token, null)
         .then((announcement_data) => {
-          let announcements: Announcement[] = [];
-          announcement_data.body.forEach((data: any) => {
+          const announcements: Announcement[] = [];
+          announcement_data.body.forEach((data: Announcement_response) => {
             announcements.push({
               id_announcement: data.PK,
               title: data.title,
@@ -117,7 +118,9 @@ export default function Home() {
           announcements.map((announcement) => (
             <div key={announcement.id_announcement} className="max-w-sm mb-5 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
               <a href={announcement.post}>
-                <img className="rounded-t-lg" src={announcement.post} alt="" />
+                <div className="relative w-auto h-auto">
+                  <Image src={announcement.post} width={400} height={0} alt="X" layout="intrinsic" />
+                </div>
               </a>
               <div className="p-5">
                 <a href={announcement.information}>

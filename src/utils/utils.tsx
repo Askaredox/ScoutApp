@@ -1,10 +1,16 @@
+'use client';
+
+import DOMMatrix from '@thednp/dommatrix';
+
+global.DOMMatrix = DOMMatrix as unknown as typeof globalThis.DOMMatrix;
+
 import '@ungap/with-resolvers';
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist"; /* webpackIgnore: true */
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs'; /* webpackIgnore: true */
 
 GlobalWorkerOptions.workerSrc = new URL(
-    "pdfjs-dist/build/pdf.worker.min.mjs",
+    "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
     import.meta.url
 ).toString();
 
@@ -20,11 +26,11 @@ export const request = async (
     path: string,
     content_type: string = 'application/json',
     token: string | null = null,
-    body?: any | string
+    body?: string | null
 ) => {
     let response = null;
     try {
-        let headers: { 'Content-Type': string; 'Authorization'?: string; } = {
+        const headers: { 'Content-Type': string; 'Authorization'?: string; } = {
             'Content-Type': content_type,
         };
 
@@ -108,7 +114,8 @@ export const isAuthenticated = () => {
         const decoded = jwtDecode(token);
         if (!decoded.exp) return false; // Invalid token
         return decoded.exp * 1000 > Date.now(); // Check if token is expired
-    } catch (error) {
+    } catch (err) {
+        console.error("Token decoding error:", err);
         return false; // Invalid token
     }
 };
@@ -127,9 +134,6 @@ export const formatDateToYYYYMMDD = (date: Date): string => {
 
 async function getFirstPageAsImageFile(pdfFile: File): Promise<File | null> {
     try {
-
-        // @ts-ignore
-        // await import('pdfjs-dist/build/pdf.worker.mjs');
         const pdfData = await pdfFile.arrayBuffer(); // Convert the file to ArrayBuffer
         const pdf = await getDocument({ data: pdfData }).promise;
         const page = await pdf.getPage(1); // Get the first page

@@ -19,13 +19,13 @@ const Callback = () => {
             }
 
             try {
-                const response = await request('POST', "/token", 'application/json', null, { 'code': code });
+                const response = await request('POST', "/token", 'application/json', null, JSON.stringify({ 'code': code }));
                 if (response.error) { push("/login"); return; }
                 // Store tokens securely
                 Cookies.set("accessToken", response.access_token, { secure: true, httpOnly: false });
                 Cookies.set("idToken", response.id_token, { secure: true, httpOnly: false });
                 Cookies.set("refreshToken", response.refresh_token, { secure: true, httpOnly: false });
-                let user = await getGroup();
+                const user = await getGroup();
                 if (user.groups == 'Scout') push("/");
                 else if (user.groups == 'Admin') push("/admin");
 

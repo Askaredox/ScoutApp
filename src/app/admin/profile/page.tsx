@@ -30,7 +30,7 @@ export default function Normaluser() {
     }, []);
 
     async function get_group() {
-        let user = await getGroup();
+        const user = await getGroup();
         if (user.groups == 'Scout') {
             replace("/profile");
         }
@@ -41,7 +41,7 @@ export default function Normaluser() {
     }
 
     function update_user() {
-        let token = Cookies.get('idToken');
+        const token = Cookies.get('idToken');
         request('GET', '/user_info', "application/json", token, null)
             .then((scout) => {
                 setNormaluser({ id_user: scout.sub, email: scout.email, email_verified: scout.email_verified, name: scout.name, groups: scout.groups });

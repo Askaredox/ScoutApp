@@ -3,15 +3,16 @@
 import { File_data, Folder_data } from "@/utils/interfaces";
 import { getGroup, isAuthenticated, refreshAuthToken, request } from "@/utils/utils";
 import Cookies from 'js-cookie';
+import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 
 
-function get_breadcrumb(url: any, setUrl: any) {
-    let result = [];
+function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.Dispatch<React.SetStateAction<{ path: string, id: string }[]>>) {
+    const result = [];
     result.push((
         <li className="inline-flex items-center" key={0}>
-            <button onClick={() => setUrl([{ 'path': '/', 'id': 0 }])} className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
+            <button onClick={() => setUrl([{ 'path': '/', 'id': '0' }])} className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
                 <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
                 </svg>
@@ -52,9 +53,9 @@ function get_breadcrumb(url: any, setUrl: any) {
 
 
 export default function AdminBiblioteca() {
-    let [url, setUrl] = useState([{ 'path': '/', 'id': '0' }]);
-    let [folders, setFolders] = useState<Folder_data[]>([]);
-    let [files, setFiles] = useState<File_data[]>([]);
+    const [url, setUrl] = useState([{ 'path': '/', 'id': '0' }]);
+    const [folders, setFolders] = useState<Folder_data[]>([]);
+    const [files, setFiles] = useState<File_data[]>([]);
     const { replace, back } = useRouter();
 
 
@@ -70,8 +71,8 @@ export default function AdminBiblioteca() {
 
     }, [url]);
 
-    async function get_group(function_callback: any) {
-        let user = await getGroup();
+    async function get_group(function_callback: () => void) {
+        const user = await getGroup();
         if (user.groups == 'Scout') {
             replace("/biblioteca");
             function_callback();
@@ -82,18 +83,18 @@ export default function AdminBiblioteca() {
     }
 
     function update_folders() {
-        let token = Cookies.get('idToken');
+        const token = Cookies.get('idToken');
         console.log(url)
         if (token)
             request('GET', '/folder?folder=' + url[url.length - 1].id, 'application/json', token, null)
                 .then((folder_data) => {
-                    let folders: Folder_data[] = [];
-                    let files: File_data[] = [];
-                    folder_data.body.forEach((data: any) => {
+                    const folders: Folder_data[] = [];
+                    const files: File_data[] = [];
+                    folder_data.body.forEach((data: Folder_data | File_data) => {
                         if (data.type === 'FOLDER') {
-                            folders.push(data);
+                            folders.push(data as Folder_data);
                         } else if (data.type === 'FILE') {
-                            files.push(data);
+                            files.push(data as File_data);
                         }
                     });
                     setFolders(folders);
@@ -104,8 +105,8 @@ export default function AdminBiblioteca() {
 
 
     async function view_file(file_data: File_data) {
-        let data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
-        let file_url = data.body.url;
+        const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
+        const file_url = data.body.url;
         window.open(file_url, '_blank');
     }
 
@@ -200,7 +201,9 @@ export default function AdminBiblioteca() {
                                                 files.map((file, i) => (
                                                     <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={async () => await view_file(file)}>
                                                         <td className="px-2 py-2" align="center" >
-                                                            <img src={file.thumbnail} alt='X' ></img>
+                                                            <div className="relative w-[60px] h-auto">
+                                                                <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
+                                                            </div>
                                                         </td>
                                                         <th scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
 

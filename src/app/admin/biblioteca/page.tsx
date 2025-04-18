@@ -3,15 +3,16 @@
 import { File_data, Folder_data } from "@/utils/interfaces";
 import { create_thumbnail, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from "@/utils/utils";
 import Cookies from 'js-cookie';
+import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 
 
-function get_breadcrumb(url: any, setUrl: any) {
-    let result = [];
+function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.Dispatch<React.SetStateAction<{ path: string, id: string }[]>>) {
+    const result = [];
     result.push((
         <li className="inline-flex items-center" key={0}>
-            <button onClick={() => setUrl([{ 'path': '/', 'id': 0 }])} className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
+            <button onClick={() => setUrl([{ 'path': '/', 'id': '0' }])} className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
                 <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
                 </svg>
@@ -52,19 +53,19 @@ function get_breadcrumb(url: any, setUrl: any) {
 
 
 export default function AdminBiblioteca() {
-    let [url, setUrl] = useState([{ 'path': '/', 'id': '0' }]);
-    let [folders, setFolders] = useState<Folder_data[]>([]);
-    let [files, setFiles] = useState<File_data[]>([]);
-    let [newFolderModal, setNewFolderModal] = useState<boolean>(false);
-    let [newFolderCanView, setNewFolderCanView] = useState<boolean>(true);
-    let [newFolderCanDownload, setNewFolderCanDownload] = useState<boolean>(true);
-    let [newFileModal, setNewFileModal] = useState<boolean>(false);
-    let [newFileCanView, setNewFileCanView] = useState<boolean>(true);
-    let [newFileName, setNewFileName] = useState<string>('');
-    let [newFileCanDownload, setNewFileCanDownload] = useState<boolean>(true);
-    let [newFileDescription, setNewFileDescription] = useState<string>('');
-    let [newFileD, setNewFileD] = useState<File | null>(null);
-    let [newFileSpinner, setNewFileSpinner] = useState<boolean>(false);
+    const [url, setUrl] = useState([{ 'path': '/', 'id': '0' }]);
+    const [folders, setFolders] = useState<Folder_data[]>([]);
+    const [files, setFiles] = useState<File_data[]>([]);
+    const [newFolderModal, setNewFolderModal] = useState<boolean>(false);
+    const [newFolderCanView, setNewFolderCanView] = useState<boolean>(true);
+    const [newFolderCanDownload, setNewFolderCanDownload] = useState<boolean>(true);
+    const [newFileModal, setNewFileModal] = useState<boolean>(false);
+    const [newFileCanView, setNewFileCanView] = useState<boolean>(true);
+    const [newFileName, setNewFileName] = useState<string>('');
+    const [newFileCanDownload, setNewFileCanDownload] = useState<boolean>(true);
+    const [newFileDescription, setNewFileDescription] = useState<string>('');
+    const [newFileD, setNewFileD] = useState<File | null>(null);
+    const [newFileSpinner, setNewFileSpinner] = useState<boolean>(false);
     const [speed_dial, setSpeed_dial] = useState(false);
     const { back, replace } = useRouter();
 
@@ -81,8 +82,8 @@ export default function AdminBiblioteca() {
 
     }, [url]);
 
-    async function get_group(function_callback: any) {
-        let user = await getGroup();
+    async function get_group(function_callback: () => void) {
+        const user = await getGroup();
         if (user.groups == 'Scout') {
             replace("/biblioteca");
         }
@@ -93,17 +94,17 @@ export default function AdminBiblioteca() {
     }
 
     function update_folders() {
-        let token = Cookies.get('idToken');
+        const token = Cookies.get('idToken');
         if (token)
             request('GET', '/folder?folder=' + url[url.length - 1].id, 'application/json', token, null)
                 .then((folder_data) => {
-                    let folders: Folder_data[] = [];
-                    let files: File_data[] = [];
-                    folder_data.body.forEach((data: any) => {
+                    const folders: Folder_data[] = [];
+                    const files: File_data[] = [];
+                    folder_data.body.forEach((data: Folder_data | File_data) => {
                         if (data.type === 'FOLDER') {
-                            folders.push(data);
+                            folders.push(data as Folder_data);
                         } else if (data.type === 'FILE') {
-                            files.push(data);
+                            files.push(data as File_data);
                         }
                     });
                     setFolders(folders);
@@ -112,11 +113,11 @@ export default function AdminBiblioteca() {
                 .catch((err) => console.log(err))
     }
 
-    function newFolder(e: any) {
+    function newFolder(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        let parent_id = url[url.length - 1].id
-        let folder_name = e.target[0].value
-        let token = Cookies.get('idToken');
+        const parent_id = url[url.length - 1].id
+        const folder_name = ((e.target as HTMLFormElement).elements[0] as HTMLInputElement).value
+        const token = Cookies.get('idToken');
         request('POST', '/folder', 'application/json', token, JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': folder_name, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
             .then((folder_data) => {
                 console.log(folder_data.body);
@@ -125,16 +126,16 @@ export default function AdminBiblioteca() {
             })
     }
 
-    async function newFile(e: any) {
+    async function newFile(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        let parent_id = 'FOLDER#' + url[url.length - 1].id;
-        let folder_name = newFileName;
+        const parent_id = 'FOLDER#' + url[url.length - 1].id;
+        const folder_name = newFileName;
         //let file_base64 = await getBase64(newFilePdf!);
         if (newFileD == null) {
             alert("No se ha seleccionado un archivo");
             return;
         }
-        let thumbnail = await create_thumbnail(newFileD);
+        const thumbnail = await create_thumbnail(newFileD);
         console.log(thumbnail);
         console.log(newFileD);
         if (thumbnail == null) {
@@ -143,16 +144,15 @@ export default function AdminBiblioteca() {
         }
 
         setNewFileSpinner(true)
-        let token = Cookies.get('idToken');
-        let data = {
+        const token = Cookies.get('idToken');
+        const data = {
             'id_parent_folder': parent_id,
             'name': folder_name,
             'can_download': newFolderCanDownload,
             'can_view': newFolderCanView,
             'description': newFileDescription,
         };
-        console.log(data);
-        request('POST', '/file', 'application/json', token, data)
+        request('POST', '/file', 'application/json', token, JSON.stringify(data))
             .then(async (folder_data) => {
                 await upload_presigned_url(newFileD, folder_data.body.file_data.url);
                 await upload_thumbnail(thumbnail, folder_data.body.thumbnail_data.url);
@@ -168,7 +168,11 @@ export default function AdminBiblioteca() {
         }
     }
 
-    function handleFileChange(e: any) {
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (e.target.files === null) {
+            alert("No se ha seleccionado ningun archivo");
+            return;
+        }
         if (e.target.files[0].size > 20000000) {
             alert("El archivo es demasiado grande");
             return;
@@ -183,8 +187,8 @@ export default function AdminBiblioteca() {
     }
 
     async function view_file(file_data: File_data) {
-        let data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
-        let file_url = data.body.url;
+        const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
+        const file_url = data.body.url;
         window.open(file_url, '_blank');
     }
 
@@ -278,8 +282,10 @@ export default function AdminBiblioteca() {
                                             {
                                                 files.map((file, i) => (
                                                     <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={async () => await view_file(file)}>
-                                                        <td className="px-2 py-2" align="center" >
-                                                            <img src={file.thumbnail} alt='X' ></img>
+                                                        <td className="px-2 py-2" align="center">
+                                                            <div className="relative w-[60px] h-auto">
+                                                                <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
+                                                            </div>
                                                         </td>
                                                         <th scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
 
@@ -309,9 +315,9 @@ export default function AdminBiblioteca() {
                         </div>
                     </div>
                 </section>
-                <div data-dial-init className="fixed end-6 bottom-6 group" onMouseOver={(_) => setSpeed_dial(true)} onMouseOut={(_) => setSpeed_dial(false)} >
+                <div data-dial-init className="fixed end-6 bottom-6 group" onMouseOver={() => setSpeed_dial(true)} onMouseOut={() => setSpeed_dial(false)} >
                     <div id="speed-dial-menu-default" className={"flex flex-col items-center mb-4 space-y-2 " + (speed_dial ? "" : "hidden")}>
-                        <button onClick={(_) => { setNewFolderModal(true) }} className="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                        <button onClick={() => { setNewFolderModal(true) }} className="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                             <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                             </svg>
@@ -322,7 +328,7 @@ export default function AdminBiblioteca() {
                             Añadir folder
                             <div className="tooltip-arrow" data-popper-arrow></div>
                         </div>
-                        <button onClick={(_) => { setNewFileModal(true) }} className="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                        <button onClick={() => { setNewFileModal(true) }} className="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                             <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
@@ -361,7 +367,7 @@ export default function AdminBiblioteca() {
                                 <span className="sr-only">Cerrar</span>
                             </button>
                         </div>
-                        <form className="p-4 md:p-5" onSubmit={newFolder} >
+                        <form className="p-4 md:p-5" onSubmit={(e) => newFolder(e)} >
                             <div className="grid gap-4 mb-4 grid-cols-2">
                                 <div className="col-span-2">
                                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre del folder</label>
@@ -370,14 +376,14 @@ export default function AdminBiblioteca() {
                                 </div>
                                 <div >
                                     <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={(_) => { setNewFolderCanView(!newFolderCanView) }} className="sr-only peer" checked={newFolderCanView}></input>
+                                        <input type="checkbox" onChange={() => { setNewFolderCanView(!newFolderCanView) }} className="sr-only peer" checked={newFolderCanView}></input>
                                         <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                         <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Visible</span>
                                     </label>
                                 </div>
                                 <div>
                                     <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={(_) => { setNewFolderCanDownload(!newFolderCanDownload) }} className="sr-only peer" checked={newFolderCanDownload}></input>
+                                        <input type="checkbox" onChange={() => { setNewFolderCanDownload(!newFolderCanDownload) }} className="sr-only peer" checked={newFolderCanDownload}></input>
                                         <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                         <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Descargable</span>
                                     </label>
@@ -416,14 +422,14 @@ export default function AdminBiblioteca() {
                                 </div>
                                 <div className="my-4">
                                     <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={(_) => { setNewFileCanView(!newFileCanView) }} className="sr-only peer" checked={newFileCanView}></input>
+                                        <input type="checkbox" onChange={() => { setNewFileCanView(!newFileCanView) }} className="sr-only peer" checked={newFileCanView}></input>
                                         <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                         <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Visible</span>
                                     </label>
                                 </div>
                                 <div className="my-4">
                                     <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={(_) => { setNewFileCanDownload(!newFileCanDownload) }} className="sr-only peer" checked={newFileCanDownload}></input>
+                                        <input type="checkbox" onChange={() => { setNewFileCanDownload(!newFileCanDownload) }} className="sr-only peer" checked={newFileCanDownload}></input>
                                         <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                         <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Descargable</span>
                                     </label>

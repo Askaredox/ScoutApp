@@ -1,5 +1,5 @@
 'use client';
-import { Announcement, Announcement_metadata } from '@/utils/interfaces';
+import { Announcement, Announcement_metadata, Announcement_response } from '@/utils/interfaces';
 import { formatDateToYYYYMMDD, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from '@/utils/utils';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -45,7 +45,7 @@ export default function AdminAnnouncement() {
     }, []);
 
     async function get_group() {
-        let user = await getGroup();
+        const user = await getGroup();
         if (user.groups == 'Scout') {
             replace("/");
         }
@@ -56,19 +56,19 @@ export default function AdminAnnouncement() {
     }
 
     function update_announcement_url(url: string) {
-        let token = Cookies.get('idToken');
+        const token = Cookies.get('idToken');
         request('GET', url, "application/json", token, null)
             .then((announcement_data_res) => {
-                let count = announcement_data_res.metadata.total;
+                const count = announcement_data_res.metadata.total;
                 setannouncementEditData(new Array(count).fill(false));
-                let announcements: Announcement[] = [];
-                let announcement_meta: Announcement_metadata = {
+                const announcements: Announcement[] = [];
+                const announcement_meta: Announcement_metadata = {
                     metadata: announcement_data_res.metadata,
                     data: []
                 };
 
-                announcement_data_res.data.forEach((data: any) => {
-                    let a_data = {
+                announcement_data_res.data.forEach((data: Announcement_response) => {
+                    const a_data = {
                         id_announcement: data.PK,
                         title: data.title,
                         description: data.description,
@@ -85,19 +85,19 @@ export default function AdminAnnouncement() {
     }
 
     function update_announcement(page: number = 1, per_page: number = 10) {
-        let token = Cookies.get('idToken');;
+        const token = Cookies.get('idToken');;
         request('GET', '/announcements_meta?page=' + page + '&per_page=' + per_page, "application/json", token, null)
             .then((announcement_data_res) => {
-                let count = announcement_data_res.metadata.total;
+                const count = announcement_data_res.metadata.total;
                 setannouncementEditData(new Array(count).fill(false));
-                let announcements: Announcement[] = [];
-                let announcement_meta: Announcement_metadata = {
+                const announcements: Announcement[] = [];
+                const announcement_meta: Announcement_metadata = {
                     metadata: announcement_data_res.metadata,
                     data: []
                 };
 
-                announcement_data_res.data.forEach((data: any) => {
-                    let a_data = {
+                announcement_data_res.data.forEach((data: Announcement_response) => {
+                    const a_data = {
                         id_announcement: data.PK,
                         title: data.title,
                         description: data.description,
@@ -126,16 +126,16 @@ export default function AdminAnnouncement() {
         setDeleteAnnouncementId(id);
     }
 
-    async function newAnnouncement(e: any) {
+    async function newAnnouncement(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        let data = {
+        const data = {
             title: announcementsubject,
             description: announcementshort_description,
             image_name: announcementportrait?.name,
             information_name: announcementinformation?.name,
             expire_date: announcementexpire
         };
-        let token = Cookies.get('idToken');
+        const token = Cookies.get('idToken');
         request('POST', '/announcement', "application/json", token, JSON.stringify(data))
             .then(async (announcement) => {
                 console.log(announcement);
@@ -149,11 +149,11 @@ export default function AdminAnnouncement() {
             }).catch((err) => console.error(err))
         //.finally(() => setNewFileSpinner(false));
     }
-    async function updateAnnouncement(e: any) {
+    async function updateAnnouncement(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        let announcement_id = updateAnnouncementid.split('#')[1];
+        const announcement_id = updateAnnouncementid.split('#')[1];
 
-        let data = {
+        const data = {
             title: updateAnnouncementsubject,
             description: updateAnnouncementshort_description,
             image_name: updateAnnouncementportrait?.name,
@@ -161,7 +161,7 @@ export default function AdminAnnouncement() {
             expire_date: formatDateToYYYYMMDD(new Date(Number(updateAnnouncementexpire) * 1000))
         };
 
-        let token = Cookies.get('idToken');
+        const token = Cookies.get('idToken');
         request('PUT', '/announcement?id_announcement=' + announcement_id, "application/json", token, JSON.stringify(data))
             .then(async (announcement) => {
                 console.log(announcement);
@@ -176,18 +176,23 @@ export default function AdminAnnouncement() {
     }
 
 
-    function deleteAnnouncement(e: any) {
+    function deleteAnnouncement(e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        let token = Cookies.get('idToken');
-        let announcement_id = deleteAnnouncementId.split('#')[1];
+        const token = Cookies.get('idToken');
+        const announcement_id = deleteAnnouncementId.split('#')[1];
         request('DELETE', '/announcement?id_announcement=' + announcement_id, "application/json", token, null)
-            .then((announcement) => {
+            .then(() => {
                 update_announcement()
                 setDeleteAnnouncementModal(false)
             })
     }
 
-    function handleUpdateFileChange(e: any, type: string) {
+
+    function handleUpdateFileChange(e: React.ChangeEvent<HTMLInputElement>, type: string) {
+        if (e.target.files === null) {
+            alert("No se ha seleccionado ningun archivo");
+            return;
+        }
         if (e.target.files[0].size > 20000000) {
             alert("El archivo es demasiado grande");
             return;
@@ -198,7 +203,11 @@ export default function AdminAnnouncement() {
             setUpdateAnnouncementinformation(e.target.files[0]);
     }
 
-    function handleFileChange(e: any, type: string) {
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, type: string) {
+        if (e.target.files === null) {
+            alert("No se ha seleccionado ningun archivo");
+            return;
+        }
         if (e.target.files[0].size > 20000000) {
             alert("El archivo es demasiado grande");
             return;
@@ -508,7 +517,7 @@ export default function AdminAnnouncement() {
                             <p className="mb-4 text-gray-500 dark:text-gray-300">¿Seguro que desea eliminar este Anuncio?</p>
                             <div className="flex justify-center items-center space-x-4">
                                 <button onClick={() => setDeleteAnnouncementModal(false)} data-modal-toggle="deleteModal" type="button" className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancelar</button>
-                                <button onClick={deleteAnnouncement} type="submit" className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">Yes, seguro</button>
+                                <button onClick={(e) => deleteAnnouncement(e)} type="submit" className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">Yes, seguro</button>
                             </div>
                         </div>
                     </div>

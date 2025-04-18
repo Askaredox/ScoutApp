@@ -1,4 +1,12 @@
-
+export interface Announcement_response {
+    PK: string;
+    title: string;
+    description: string;
+    post: string;
+    information: string;
+    created: string;
+    expire_date: string;
+}
 
 export interface Folder_data {
     parent_id: string,
