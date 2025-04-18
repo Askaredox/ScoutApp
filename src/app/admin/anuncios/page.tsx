@@ -160,7 +160,7 @@ export default function AdminAnnouncement() {
             information_name: updateAnnouncementinformation?.name,
             expire_date: formatDateToYYYYMMDD(new Date(Number(updateAnnouncementexpire) * 1000))
         };
-        console.log(data);
+
         let token = Cookies.get('idToken');
         request('PUT', '/announcement?id_announcement=' + announcement_id, "application/json", token, JSON.stringify(data))
             .then(async (announcement) => {

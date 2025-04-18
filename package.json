@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.774.0",
+    "@ungap/with-resolvers": "^0.1.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "next": "15.2.3",
+    "pdfjs-dist": "^5.1.91",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

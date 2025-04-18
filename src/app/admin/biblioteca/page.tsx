@@ -1,7 +1,7 @@
 'use client';
 
 import { File_data, Folder_data } from "@/utils/interfaces";
-import { getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from "@/utils/utils";
+import { create_thumbnail, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from "@/utils/utils";
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
@@ -134,8 +134,15 @@ export default function AdminBiblioteca() {
             alert("No se ha seleccionado un archivo");
             return;
         }
-        setNewFileSpinner(true)
+        let thumbnail = await create_thumbnail(newFileD);
+        console.log(thumbnail);
+        console.log(newFileD);
+        if (thumbnail == null) {
+            alert("No se ha podido crear la miniatura del archivo");
+            return;
+        }
 
+        setNewFileSpinner(true)
         let token = Cookies.get('idToken');
         let data = {
             'id_parent_folder': parent_id,
@@ -148,7 +155,7 @@ export default function AdminBiblioteca() {
         request('POST', '/file', 'application/json', token, data)
             .then(async (folder_data) => {
                 await upload_presigned_url(newFileD, folder_data.body.file_data.url);
-                await upload_thumbnail(newFileD, folder_data.body.thumbnail_data.url);
+                await upload_thumbnail(thumbnail, folder_data.body.thumbnail_data.url);
                 alert("Archivo subido correctamente");
                 update_folders();
                 setNewFileModal(false);
