@@ -1,5 +1,8 @@
 'use client';
 
+import AddButton from '@/app/_components/AddButton';
+import Header from '@/app/_components/Header';
+import TableCrumbs from '@/app/_components/TableCrumbs';
 import { File_data, Folder_data } from "@/utils/interfaces";
 import { create_thumbnail, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from "@/utils/utils";
 import Cookies from 'js-cookie';
@@ -12,7 +15,7 @@ function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.
     const result = [];
     result.push((
         <li className="inline-flex items-center" key={0}>
-            <button onClick={() => setUrl([{ 'path': '/', 'id': '0' }])} className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
+            <button onClick={() => setUrl([{ 'path': '/', 'id': '0' }])} className="inline-flex items-center cursor-pointer font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
                 <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
                 </svg>
@@ -24,11 +27,12 @@ function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.
         if (i === url.length - 1) {
             result.push((
                 <li className="inline-flex items-center" key={i}>
-                    <button className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
+                    <svg className="rtl:rotate-180 w-3 h-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
+                    </svg>
+                    <button className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 cursor-pointer hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
 
-                        <svg className="rtl:rotate-180 w-3 h-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
-                        </svg>
+
                         <span className="ms-1 font-medium text-gray-500 md:ms-2 dark:text-gray-400">{url[i].path}</span>
                     </button>
                 </li>
@@ -37,11 +41,12 @@ function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.
         else {
             result.push((
                 <li className="inline-flex items-center" key={i}>
-                    <button onClick={() => setUrl(url.slice(0, i + 1))} className="inline-flex items-center font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
 
-                        <svg className="rtl:rotate-180 w-3 h-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
-                        </svg>
+                    <svg className="rtl:rotate-180 w-3 h-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
+                    </svg>
+                    <button onClick={() => setUrl(url.slice(0, i + 1))} className="inline-flex items-center cursor-pointer font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-500 rounded-full px-2 dark:text-gray-400 dark:hover:text-white">
+
                         <span className="ms-1 font-medium text-gray-500 md:ms-2 dark:text-gray-400">{url[i].path}</span>
                     </button>
                 </li>
@@ -66,8 +71,8 @@ export default function AdminBiblioteca() {
     const [newFileDescription, setNewFileDescription] = useState<string>('');
     const [newFileD, setNewFileD] = useState<File | null>(null);
     const [newFileSpinner, setNewFileSpinner] = useState<boolean>(false);
-    const [speed_dial, setSpeed_dial] = useState(false);
-    const { back, replace } = useRouter();
+    const [ready, setReady] = useState(false);
+    const { replace } = useRouter();
 
 
     useEffect(() => {
@@ -84,17 +89,17 @@ export default function AdminBiblioteca() {
 
     async function get_group(function_callback: () => void) {
         const user = await getGroup();
-        if (user.groups == 'Scout') {
-            replace("/biblioteca");
-        }
-        else if (user.groups == 'Admin') {
-            replace("/admin/biblioteca");
+        if (user.groups == 'Admin') {
             function_callback();
+        }
+        else {
+            replace("/biblioteca");
         }
     }
 
     function update_folders() {
         const token = Cookies.get('idToken');
+        setReady(false)
         if (token)
             request('GET', '/folder?folder=' + url[url.length - 1].id, 'application/json', token, null)
                 .then((folder_data) => {
@@ -107,6 +112,7 @@ export default function AdminBiblioteca() {
                             files.push(data as File_data);
                         }
                     });
+                    setReady(true);
                     setFolders(folders);
                     setFiles(files);
                 })
@@ -136,8 +142,6 @@ export default function AdminBiblioteca() {
             return;
         }
         const thumbnail = await create_thumbnail(newFileD);
-        console.log(thumbnail);
-        console.log(newFileD);
         if (thumbnail == null) {
             alert("No se ha podido crear la miniatura del archivo");
             return;
@@ -197,39 +201,42 @@ export default function AdminBiblioteca() {
             <div className="min-h-screen size-full dark:bg-gray-900 bg-gray-50 flex  justify-center">
                 <section className="size-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased ">
                     <div className="px-2 lg:px-12 ">
-                        <div className="flex">
-                            <button type="button" onClick={() => back()} className="text-white p-5 mb-4 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m15 19-7-7 7-7" />
-                                </svg>
 
-                            </button>
-                            <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white mb-2">
-                                Biblioteca
-                            </h1>
+                        <Header title="Administrador de Biblioteca Scout" />
+                        <div className="flex flex-col md:flex-row md:justify-end justify-between gap-4 mb-4">
+
+                            {/* Buscador 
+                            <SearchBar
+                                handleSubmit={handleSubmit}
+                                searchTerm={searchTerm}
+                                setSearchTerm={setSearchTerm}
+                                placeholder="Buscar anuncios..."
+                            />
+                            */}
+                            {/* Botón añadir */}
+                            <AddButton
+                                text="Añadir Folder"
+                                onClick={() => setNewFolderModal(true)}
+                            />
+                            <AddButton
+                                text="Añadir Archivo"
+                                onClick={() => setNewFileModal(true)}
+                            />
+
                         </div>
 
-
-                        <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-y-scroll">
-                            <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4 ">
-                                <div className="size-full ">
-                                    <div className="flex mb-4">
-                                        <nav className="flex flex-1 ml-4" aria-label="Breadcrumb">
-                                            <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                                                {get_breadcrumb(url, setUrl)}
-                                            </ol>
-                                        </nav>
-
-                                    </div>
-                                    <table className="table-auto w-full h-1 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                            <tr>
-                                                <th scope="col" className="w-1/6 px-2 py-2" align="center">
-                                                    Tipo
-                                                </th>
-                                                <th scope="col" className="w-2/3 px-2 py-2">
-                                                    Nombre
-                                                </th>
+                        <TableCrumbs
+                            ready={ready}
+                            getCrumbs={() => get_breadcrumb(url, setUrl)}
+                            headerRows={
+                                <tr>
+                                    <th scope="col" className="w-1/6 px-2 py-2" align="center">
+                                        Tipo
+                                    </th>
+                                    <th scope="col" className="w-2/3 px-2 py-2">
+                                        Nombre
+                                    </th>
+                                    {/**
                                                 <th scope="col" className="px-2 py-2">
                                                     <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -244,110 +251,54 @@ export default function AdminBiblioteca() {
                                                         <line x1="12" y1="4" x2="12" y2="16" />
                                                     </svg>
                                                 </th>
-                                                <th scope="col" className="w-2/3 px-2 py-2">
-                                                    Fecha
-                                                </th>
-                                                <th scope="col" className="w-full px-2 py-2">
-                                                    Descripción
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                folders.map((folder, i) => (
-                                                    <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}>
-                                                        <td className="px-2 py-2" align="center">
-                                                            <svg className="h-5 w-5 text-gray-400 " width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                                                <path stroke="none" d="M0 0h24v24H0z" />
-                                                                <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                                                            </svg>
+                                                 */}
+                                    <th scope="col" className="w-2/3 px-2 py-2">
+                                        Fecha
+                                    </th>
+                                </tr>
+                            }
+                            dataRowsFolders={
+                                folders.map((folder, i) => (
+                                    <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}>
+                                        <td className="px-2 py-2" align="center">
+                                            <svg className="h-5 w-5 text-gray-400 " width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" />
+                                                <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                                            </svg>
 
-                                                        </td>
-                                                        <td scope="row" className="w-2/3 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        </td>
+                                        <td scope="row" className="w-2/3 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
 
-                                                            {folder.name}
+                                            {folder.name}
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                            dataRowsFiles=
+                            {
+                                files.map((file, i) => (
+                                    <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={async () => await view_file(file)}>
+                                        <td className="px-2 py-2" align="center">
+                                            <div className="relative w-[60px] h-auto">
+                                                <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
+                                            </div>
+                                        </td>
+                                        <td scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+
+                                            {file.name}
+                                        </td>
+                                        <td className="px-2 py-2 text-center">
+                                            {new Date(file.created * 1000).toLocaleDateString()}
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        />
 
 
-                                                        </td>
-                                                        <td className="px-2 py-2 text-center">
-                                                            {folder.can_view ? "Si" : "No"}
-                                                        </td>
-                                                        <td className="px-2 py-2 text-center">
-                                                            {folder.can_download ? "Si" : "No"}
-                                                        </td>
-                                                        <td className="w-full px-2 py-2"></td>
-                                                    </tr>
-                                                ))
-                                            }
-                                            {
-                                                files.map((file, i) => (
-                                                    <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={async () => await view_file(file)}>
-                                                        <td className="px-2 py-2" align="center">
-                                                            <div className="relative w-[60px] h-auto">
-                                                                <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
-                                                            </div>
-                                                        </td>
-                                                        <th scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-
-                                                            {file.name}
-                                                        </th>
-                                                        <td className="px-2 py-2 text-center">
-                                                            {file.can_view ? "Si" : "No"}
-                                                        </td>
-                                                        <td className="px-2 py-2 text-center">
-                                                            {file.can_download ? "Si" : "No"}
-                                                        </td>
-
-                                                        <td className="px-2 py-2 text-center">
-                                                            {new Date(file.created * 1000).toLocaleDateString()}
-                                                        </td>
-                                                        <td className="w-full px-2 py-2">
-                                                            {file.description}
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            }
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </section>
-                <div data-dial-init className="fixed end-6 bottom-6 group" onMouseOver={() => setSpeed_dial(true)} onMouseOut={() => setSpeed_dial(false)} >
-                    <div id="speed-dial-menu-default" className={"flex flex-col items-center mb-4 space-y-2 " + (speed_dial ? "" : "hidden")}>
-                        <button onClick={() => { setNewFolderModal(true) }} className="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
-                            <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                            </svg>
 
-                            <span className="sr-only">Añadir folder</span>
-                        </button>
-                        <div id="tooltip-share" role="tooltip" className="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                            Añadir folder
-                            <div className="tooltip-arrow" data-popper-arrow></div>
-                        </div>
-                        <button onClick={() => { setNewFileModal(true) }} className="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
-                            <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-
-                            <span className="sr-only">Añadir archivo</span>
-                        </button>
-                        <div id="tooltip-print" role="tooltip" className="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                            Añadir archivo
-                            <div className="tooltip-arrow" data-popper-arrow></div>
-                        </div>
-
-                    </div>
-                    <button type="button" aria-controls="speed-dial-menu-default" aria-expanded="false" className="flex items-center justify-center text-white bg-blue-700 rounded-full w-14 h-14 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800">
-                        <svg className="w-5 h-5 transition-transform group-hover:rotate-45" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-                        </svg>
-                        <span className="sr-only">Open actions menu</span>
-                    </button>
-                </div>
             </div>
 
 

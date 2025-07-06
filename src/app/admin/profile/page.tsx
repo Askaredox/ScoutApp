@@ -31,12 +31,11 @@ export default function Normaluser() {
 
     async function get_group() {
         const user = await getGroup();
-        if (user.groups == 'Scout') {
-            replace("/profile");
-        }
-        else if (user.groups == 'Admin') {
-            replace("/admin/profile");
+        if (user.groups == 'Admin') {
             update_user();
+        }
+        else {
+            replace("/");
         }
     }
 

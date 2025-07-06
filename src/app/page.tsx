@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 
-export default function Home() {
+export default function Admin() {
   const { replace, push } = useRouter();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [sidenav, setSidenav] = useState(false);
@@ -25,11 +25,10 @@ export default function Home() {
 
   async function get_group() {
     const user = await getGroup();
-    if (user.groups == 'Scout') {
-      replace("/");
-    }
-    else if (user.groups == 'Admin') {
+    if (user.groups == 'Admin') {
       replace("/admin");
+    }
+    else {
       update_announcements();
     }
   }
@@ -40,8 +39,8 @@ export default function Home() {
       request('GET', '/announcement', 'application/json', token, null)
         .then((announcement_data) => {
           const announcements: Announcement[] = [];
-          announcement_data.body.forEach((data: Announcement_response) => {
-            announcements.push({
+          announcement_data.forEach((data: Announcement_response) => {
+            const a_data = {
               id_announcement: data.PK,
               title: data.title,
               description: data.description,
@@ -49,7 +48,8 @@ export default function Home() {
               information: data.information,
               created: data.created,
               expire_date: data.expire_date
-            });
+            }
+            announcements.push(a_data);
           });
           setAnnouncements(announcements);
         })
@@ -63,18 +63,36 @@ export default function Home() {
 
     push("/logout");
   }
-
   return (
     <main>
-      <button data-drawer-target="default-sidebar" onClick={() => setSidenav(true)} data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+      {/* Botón hamburguesa visible solo en móviles */}
+      <button
+        onClick={() => setSidenav(true)}
+        type="button"
+        className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 sm:hidden"
+      >
         <span className="sr-only">Abrir barra</span>
-        <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z" />
         </svg>
       </button>
 
-      <aside id="default-sidebar" className={"fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full" + (sidenav ? " " : "sm:translate-x-0")} aria-label="Sidebar">
-        <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+      {/* Fondo oscuro cuando el menú móvil está abierto */}
+      {sidenav && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 sm:hidden"
+          onClick={() => setSidenav(false)}
+        ></div>
+      )}
+
+      {/* Sidebar */}
+      <aside
+        id="default-sidebar"
+        className={`fixed top-0 left-0 z-40 w-64 h-screen bg-gray-50 dark:bg-gray-800 transition-transform duration-300 
+    ${sidenav ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0`}
+        aria-label="Sidebar"
+      >
+        <div className="h-full px-3 py-4 overflow-y-auto">
           <ul className="space-y-2 font-medium">
             <li>
               <a href="/biblioteca" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -85,8 +103,21 @@ export default function Home() {
                 <span className="ms-3">Biblioteca Virtual</span>
               </a>
             </li>
+            {/*
+                        <li>
+                            <a href="/admin/scouts" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                                <svg className="h-8 w-8 text-gray-400" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" />
+                                    <rect x="4" y="3" width="8" height="14" rx="4" />
+                                    <rect x="12" y="7" width="8" height="10" rx="3" />
+                                    <line x1="8" y1="21" x2="8" y2="13" />
+                                    <line x1="16" y1="21" x2="16" y2="14" />
+                                </svg>
 
-
+                                <span className="ms-3">Scouts</span>
+                            </a>
+                        </li>*/
+            }
             <li>
               <hr className="my-4 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400" />
             </li>
@@ -113,35 +144,68 @@ export default function Home() {
         </div>
       </aside>
 
-      <div className="p-4 sm:ml-64 grid grid-cols-1 sm:grid-cols-2 gap-6 justify-center-safe">
-        {
-          announcements.map((announcement) => (
-            <div key={announcement.id_announcement} className="max-w-sm mb-5 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-              <a href={announcement.post}>
-                <div className="relative w-auto h-auto">
-                  <Image src={announcement.post} width={400} height={0} alt="X" layout="intrinsic" />
-                </div>
-              </a>
-              <div className="p-5">
-                <a href={announcement.information}>
-                  <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{announcement.title}</h5>
-                </a>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{announcement.description}</p>
-                {
-                  //announcement.information
-                }
-                <a href={announcement.information} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  Read more
-                  <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+
+      <div className="p-6 sm:ml-64 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        {announcements.length === 0 && (
+          <div role="status" className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">
+            <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" /><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" /></svg>
+            <span className="sr-only">Loading...</span>
+          </div>
+        )}
+        {announcements.map((announcement) => (
+          <div
+            key={announcement.id_announcement}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-shadow hover:shadow-lg"
+          >
+            <a href={announcement.information} target="_blank" rel="noopener noreferrer">
+              <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-2xl">
+                <Image
+                  src={announcement.post}
+                  alt={announcement.title}
+                  fill
+                  className="object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </div>
+            </a>
+            <div className="p-5 flex flex-col justify-between h-full">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">
+                  {announcement.title}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  📅{new Date(Number(announcement.expire_date) * 1000).toLocaleDateString()}
+
+                </p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+                  {announcement.description}
+                </p>
+                <a
+                  href={announcement.information}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Leer más
+                  <svg
+                    className="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 10"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M1 5h12m0 0L9 1m4 4L9 9"
+                    />
                   </svg>
                 </a>
               </div>
+
             </div>
-
-          ))
-        }
-
+          </div>
+        ))}
       </div>
     </main>
   );

@@ -53,7 +53,7 @@ export interface Announcement {
     expire_date: string;
 }
 
-export interface Announcement_metadata {
+export interface Metadata {
     metadata: {
         page: number, // current page
         per_page: number, // data that is supossed to be in each page

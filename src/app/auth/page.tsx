@@ -4,6 +4,7 @@ import { getGroup, request } from "@/utils/utils";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Loader from "../_components/Loader";
 
 const Callback = () => {
     const { push } = useRouter();
@@ -26,9 +27,8 @@ const Callback = () => {
                 Cookies.set("idToken", response.id_token, { secure: true, httpOnly: false });
                 Cookies.set("refreshToken", response.refresh_token, { secure: true, httpOnly: false });
                 const user = await getGroup();
-                if (user.groups == 'Scout') push("/");
-                else if (user.groups == 'Admin') push("/admin");
-
+                if (user.groups == 'Admin') push("/admin");
+                else push("/");
             } catch (error) {
                 console.error("Token exchange failed", error);
                 push("/login");
@@ -38,7 +38,7 @@ const Callback = () => {
         exchangeCodeForToken();
     }, []);
 
-    return <p>Authenticating...</p>;
+    return <Loader />;
 };
 
 export default Callback;

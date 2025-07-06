@@ -2,6 +2,7 @@
 
 import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI } from '@/utils/utils';
 import { useEffect } from "react";
+import Loader from '../_components/Loader';
 
 
 const Logout = () => {
@@ -10,7 +11,7 @@ const Logout = () => {
         window.location.href = loginUrl;
     }, []);
 
-    return <p>Redirecting to logout...</p>;
+    return <Loader />;
 };
 
 export default Logout;
