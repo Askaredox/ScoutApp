@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 
 import AddButton from '@/app/_components/AddButton';
 import Cookies from 'js-cookie';
+import Image from 'next/image';
 
 
 export default function AdminAnnouncement() {
@@ -303,7 +304,7 @@ export default function AdminAnnouncement() {
                   <td className="px-4 py-3">{new Date(Number(a.expire_date) * 1000).toLocaleDateString()}</td>
                   <td className="px-4 py-3">{new Date(Number(a.created) * 1000).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
-                    <img src={a.post} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
+                    <Image src={a.post} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
                   </td>
                   <td className="px-4 py-3">
                     <a href={a.information} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
