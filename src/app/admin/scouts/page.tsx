@@ -4,7 +4,7 @@ import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
 import { Announcement, Announcement_response, Metadata } from '@/utils/interfaces';
-import { formatDateToYYYYMMDD, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from '@/utils/utils';
+import { formatDateToYYYYMMDD, getGroup, isAuthenticated, refreshAuthToken, request } from '@/utils/utils';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -23,8 +23,6 @@ export default function AdminScout() {
     const [updateAnnouncementsubject, setUpdateAnnouncementsubject] = useState<string>('');
     const [updateAnnouncementshort_description, setUpdateAnnouncementshort_description] = useState<string>('');
     const [updateAnnouncementexpire, setUpdateAnnouncementexpire] = useState<string>('');
-    const [updateAnnouncementportrait, setUpdateAnnouncementportrait] = useState<File | null>(null);
-    const [updateAnnouncementinformation, setUpdateAnnouncementinformation] = useState<File | null>(null);
 
     const [announcementEditData, setannouncementEditData] = useState<boolean[]>([]);
 
@@ -83,6 +81,7 @@ export default function AdminScout() {
                 setAnnouncement_data(announcement_meta);
                 setFilteredAnnouncements(announcement_meta.data);
             })
+        update_users();
     }
 
     function update_users(page: number = 1, per_page: number = 10) {
@@ -138,8 +137,6 @@ export default function AdminScout() {
         const data = {
             title: updateAnnouncementsubject,
             description: updateAnnouncementshort_description,
-            image_name: updateAnnouncementportrait?.name,
-            information_name: updateAnnouncementinformation?.name,
             expire_date: formatDateToYYYYMMDD(new Date(Number(updateAnnouncementexpire) * 1000))
         };
 
@@ -147,10 +144,6 @@ export default function AdminScout() {
         request('PUT', '/announcement?id_announcement=' + announcement_id, "application/json", token, JSON.stringify(data))
             .then(async (announcement) => {
                 console.log(announcement);
-                if (updateAnnouncementportrait) // check if the file is null
-                    await upload_presigned_url(updateAnnouncementportrait, announcement.presigned_image_data.url);
-                if (updateAnnouncementinformation) // check if the file is null
-                    await upload_presigned_url(updateAnnouncementinformation, announcement.presigned_info_data.url);
                 alert("Archivo subido correctamente");
                 //update_announcement()
                 setUpdateAnnouncementModal(false)
