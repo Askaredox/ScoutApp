@@ -26,6 +26,7 @@ export default function AdminAnnouncement() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [updateAnnouncementModal, setUpdateAnnouncementModal] = useState<boolean>(false);
+  const [ready, setReady] = useState<boolean>(false);
   const [updateAnnouncementid, setUpdateAnnouncementid] = useState<string>('');
   const [updateAnnouncementsubject, setUpdateAnnouncementsubject] = useState<string>('');
   const [updateAnnouncementshort_description, setUpdateAnnouncementshort_description] = useState<string>('');
@@ -94,6 +95,7 @@ export default function AdminAnnouncement() {
 
   function update_announcement(page: number = 1, per_page: number = 10) {
     const token = Cookies.get('idToken');;
+    setReady(false);
     request('GET', '/announcements_meta?page=' + page + '&per_page=' + per_page, "application/json", token, null)
       .then((announcement_data_res) => {
         const count = announcement_data_res.metadata.total;
@@ -119,6 +121,7 @@ export default function AdminAnnouncement() {
         announcement_meta.data = announcements;
         setAnnouncement_data(announcement_meta);
         setFilteredAnnouncements(announcement_meta.data);
+        setReady(true);
       })
   }
 
@@ -285,6 +288,7 @@ export default function AdminAnnouncement() {
 
           {/* Tabla de Anuncios */}
           <DataTable
+            ready={ready}
             headerRows={
               <tr>
                 <th className="px-4 py-3 text-left">Título</th>
@@ -304,7 +308,7 @@ export default function AdminAnnouncement() {
                   <td className="px-4 py-3">{new Date(Number(a.expire_date) * 1000).toLocaleDateString()}</td>
                   <td className="px-4 py-3">{new Date(Number(a.created) * 1000).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
-                    <Image src={a.post} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
+                    <Image src={a.post} width={60} height={0} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
                   </td>
                   <td className="px-4 py-3">
                     <a href={a.information} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">

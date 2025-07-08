@@ -20,7 +20,7 @@ const Callback = () => {
             }
 
             try {
-                const response = await request('POST', "/token", 'application/json', null, JSON.stringify({ 'code': code }));
+                const response = await request('POST', "/token", 'application/json', null, JSON.stringify({ 'code': code, 'redirect_uri': `${window.location.origin}/auth` }));
                 if (response.error) { push("/login"); return; }
                 // Store tokens securely
                 Cookies.set("accessToken", response.access_token, { secure: true, httpOnly: false });
