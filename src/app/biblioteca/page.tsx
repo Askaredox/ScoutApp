@@ -121,7 +121,7 @@ export default function AdminBiblioteca() {
                 <section className="size-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased ">
                     <div className="px-2 lg:px-12 ">
 
-                        <Header title="Administrador de Biblioteca Scout" />
+                        <Header title="Biblioteca Scout" />
                         <div className="flex flex-col md:flex-row md:justify-end justify-between gap-4 mb-4">
 
                             {/* Buscador 
