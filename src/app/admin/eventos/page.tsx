@@ -59,7 +59,7 @@ export default function AdminAnnouncement() {
       update_announcement();
     }
     else {
-      replace("/anuncios");
+      replace("/eventos");
     }
   }
 
@@ -266,7 +266,7 @@ export default function AdminAnnouncement() {
       <section className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <Header title="Administrador de Anuncios" />
+          <Header title="Administrador de Eventos" />
 
           {/* Actions */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
@@ -275,18 +275,18 @@ export default function AdminAnnouncement() {
               handleSubmit={handleSubmit}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
-              placeholder="Buscar anuncios..."
+              placeholder="Buscar Eventos..."
             />
 
             {/* Botón añadir */}
             <AddButton
-              text="Añadir Anuncio"
+              text="Añadir Evento"
               onClick={() => setNewAnnouncementModal(true)}
             />
 
           </div>
 
-          {/* Tabla de Anuncios */}
+          {/* Tabla de Eventos */}
           <DataTable
             ready={ready}
             headerRows={
@@ -367,7 +367,7 @@ export default function AdminAnnouncement() {
         </div>
       </section>
       <CreateModal
-        title="Nuevo Anuncio"
+        title="Nuevo Evento"
         toggleModal={newAnnouncementModal}
         onClose={() => setNewAnnouncementModal(false)}
         onSubmit={newAnnouncement}
@@ -375,7 +375,7 @@ export default function AdminAnnouncement() {
         <div>
           <div>
             <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
-            <input type="text" id="subject" name="subject" value={announcementsubject} onChange={(e) => setannouncementsubject(e.target.value)} placeholder="Título del anuncio" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
+            <input type="text" id="subject" name="subject" value={announcementsubject} onChange={(e) => setannouncementsubject(e.target.value)} placeholder="Título del Evento" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
           </div>
 
           <div>
@@ -406,7 +406,7 @@ export default function AdminAnnouncement() {
         <div className="relative w-full max-w-2xl mx-auto p-4">
           <div className="relative rounded-2xl bg-white shadow-xl dark:bg-gray-900 px-6 py-8">
             <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nuevo Anuncio</h3>
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nuevo Evento</h3>
               <button type="button" onClick={() => setUpdateAnnouncementModal(false)} className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition" aria-label="Cerrar">
                 <svg className="w-6 h-6 text-gray-600 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -429,7 +429,7 @@ export default function AdminAnnouncement() {
                     name="announcementid"
                     id="announcementid"
                     className="w-full p-3 text-sm text-gray-500 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600"
-                    placeholder="ID del anuncio"
+                    placeholder="ID del Evento"
                   />
                 </div>
 
@@ -448,7 +448,7 @@ export default function AdminAnnouncement() {
                     name="subject"
                     id="subject"
                     className="w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                    placeholder="Título del anuncio"
+                    placeholder="Título del Evento"
                     required
                   />
                 </div>
@@ -545,7 +545,7 @@ export default function AdminAnnouncement() {
                     clipRule="evenodd"
                   />
                 </svg>
-                Editar Anuncio
+                Editar Evento
               </button>
             </form>
           </div>
@@ -557,7 +557,7 @@ export default function AdminAnnouncement() {
         <div className="relative w-full max-w-2xl mx-auto p-4">
           <div className="relative rounded-2xl bg-white shadow-xl dark:bg-gray-900 px-6 py-8">
             <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nuevo Anuncio</h3>
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nuevo Evento</h3>
               <button type="button" onClick={() => setDeleteAnnouncementModal(false)} className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition" aria-label="Cerrar">
                 <svg className="w-6 h-6 text-gray-600 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -567,7 +567,7 @@ export default function AdminAnnouncement() {
             <svg className="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
-            <p className="mb-4 text-gray-500 dark:text-gray-300">¿Seguro que desea eliminar este Anuncio?</p>
+            <p className="mb-4 text-gray-500 dark:text-gray-300">¿Seguro que desea eliminar este Evento?</p>
             <div className="flex justify-center items-center space-x-4">
               <button onClick={() => setDeleteAnnouncementModal(false)} data-modal-toggle="deleteModal" type="button" className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancelar</button>
               <button onClick={(e) => deleteAnnouncement(e)} type="submit" className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">Yes, seguro</button>

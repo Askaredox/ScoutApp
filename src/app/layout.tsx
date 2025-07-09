@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Biblioteca Scout",
-  description: "Aplicación de gestión de biblioteca para la Asociación Scout de Guatemala",
+  title: "Scouteca",
+  description: "Scouteca - Tu lugar para tener información scout",
 };
 
 export default function RootLayout({

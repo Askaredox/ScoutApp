@@ -120,6 +120,16 @@ export default function Admin() {
               </a>
             </li>
             <li>
+              <a href="https://docs.google.com/forms/d/e/1FAIpQLSdoF-wmhPf4EhrVk3qHe8o8NSLuuYYoyhU_nItCbcd1_tnroA/viewform?usp=sharing&ouid=110963328688090878258" target="_blank" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg className="h-8 w-8 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17h6l3 3v-3h2V9h-2M4 4h11v8H9l-3 3v-3H4V4Z" />
+                </svg>
+
+
+                <span className="flex-1 ms-3 whitespace-nowrap">Comentarios</span>
+              </a>
+            </li>
+            <li>
               <a onClick={logout} className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer">
                 <svg className="h-8 w-8 text-gray-400" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" />
@@ -134,7 +144,7 @@ export default function Admin() {
 
         <footer className="bg-white rounded-lg shadow-sm m-4 dark:bg-gray-800">
           <div className="w-full fixed bottom-0 left-0  mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
-            <span className="text-sm text-gray-500 dark:text-gray-400">© 2025 <a href="https://github.com/Askaredox" className="hover:underline">Andrés Carvajal</a>. All Rights Reserved.
+            <span className="text-sm text-gray-500 dark:text-gray-400">© 2025 <a href="https://github.com/Askaredox" target="_blank" className="hover:underline">Andrés Carvajal</a>. All Rights Reserved.
             </span>
           </div>
         </footer>
