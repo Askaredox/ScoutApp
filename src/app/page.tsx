@@ -174,7 +174,7 @@ export default function Admin() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  Leer más
+                  Ficha del evento
                   <svg
                     className="w-4 h-4"
                     xmlns="http://www.w3.org/2000/svg"
