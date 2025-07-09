@@ -131,6 +131,13 @@ export default function Admin() {
             </li>
           </ul>
         </div>
+
+        <footer className="bg-white rounded-lg shadow-sm m-4 dark:bg-gray-800">
+          <div className="w-full fixed bottom-0 left-0  mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+            <span className="text-sm text-gray-500 dark:text-gray-400">© 2025 <a href="https://github.com/Askaredox" className="hover:underline">Andrés Carvajal</a>. All Rights Reserved.
+            </span>
+          </div>
+        </footer>
       </aside>
 
 
@@ -196,6 +203,7 @@ export default function Admin() {
           </div>
         ))}
       </div>
+
     </main>
   );
 }
