@@ -171,7 +171,7 @@ export default function AdminEvent() {
       description: updateEventshort_description,
       image_name: updateEventportrait?.name,
       information_name: updateEventinformation?.name,
-      expire_date: formatDateToYYYYMMDD(new Date(Number(updateEventexpire) * 1000))
+      expire_date: formatDateToYYYYMMDD(new Date(Number(updateEventexpire) * 1000 + 1000 * 60 * 60 * 24)) // Añadir un día para corregir el desfase
     };
 
     const token = Cookies.get('idToken');
@@ -345,6 +345,7 @@ export default function AdminEvent() {
           <Pagination paginatedData={event_data} update_event_url={update_event_url} />
         </div>
       </section>
+
       <CreateModal
         title="Crear nuevo Evento"
         toggleModal={newEventModal}
@@ -379,8 +380,6 @@ export default function AdminEvent() {
           </div>
         </div>
       </CreateModal>
-
-
 
       <div id="updateEventModal" tabIndex={-1} aria-hidden="true" className={"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 " + (updateEventModal ? "" : "hidden")}>
         <div className="relative w-full max-w-2xl mx-auto p-4">
@@ -464,7 +463,7 @@ export default function AdminEvent() {
                   <input
                     type="date"
                     value={formatDateToYYYYMMDD(new Date(Number(updateEventexpire) * 1000))}
-                    onChange={(e) => setUpdateEventexpire(e.target.value)}
+                    onChange={(e) => setUpdateEventexpire(((new Date(e.target.value).getTime() + 1000 * 60 * 60 * 24) / 1000).toString())}
                     name="expire"
                     id="expire"
                     className="w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
