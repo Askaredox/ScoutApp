@@ -9,7 +9,6 @@ type TableCrumbsProps = {
 };
 
 const TableCrumbs: React.FC<TableCrumbsProps> = ({ ready, headerRows, dataRowsFolders, dataRowsFiles, getCrumbs }) => {
-    console.log('Ready')
     return (
         <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-y-scroll">
             <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4 ">

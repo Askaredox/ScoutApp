@@ -1,4 +1,4 @@
-export interface Announcement_response {
+export interface Event_response {
     PK: string;
     title: string;
     description: string;
@@ -43,8 +43,8 @@ export interface Data {
     description?: string
 }
 
-export interface Announcement {
-    id_announcement: string;
+export interface Event {
+    id_event: string;
     title: string;
     description: string;
     post: string;
@@ -67,5 +67,5 @@ export interface Metadata {
             last: string
         }
     },
-    data: Array<Announcement>
+    data: Array<Event>
 }

@@ -2,8 +2,8 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: [
-      'scout-filesystem.s3.amazonaws.com',
-      'scout-announcements.s3.amazonaws.com'
+      process.env.NEXT_PUBLIC_S3_FILESYSTEM_URL,
+      process.env.NEXT_PUBLIC_S3_EVENTS_URL
     ], // Add your domain here
   },
   webpack(config) {

@@ -38,7 +38,7 @@ export default function Admin() {
         const token = Cookies.get('idToken');
         if (token) {
             setReady(false);
-            request('GET', '/announcement', 'application/json', token, null)
+            request('GET', '/event', 'application/json', token, null)
                 .then((announcement_data) => {
                     const announcements: Announcement[] = [];
                     announcement_data.forEach((data: Announcement_response) => {

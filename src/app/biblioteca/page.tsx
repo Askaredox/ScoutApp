@@ -94,14 +94,13 @@ export default function AdminBiblioteca() {
                 .then((folder_data) => {
                     const folders: Folder_data[] = [];
                     const files: File_data[] = [];
-                    folder_data.body.forEach((data: Folder_data | File_data) => {
+                    folder_data.forEach((data: Folder_data | File_data) => {
                         if (data.type === 'FOLDER') {
                             folders.push(data as Folder_data);
                         } else if (data.type === 'FILE') {
                             files.push(data as File_data);
                         }
                     });
-                    console.log('Ready')
                     setReady(true);
                     setFolders(folders);
                     setFiles(files);
@@ -111,7 +110,7 @@ export default function AdminBiblioteca() {
 
     async function view_file(file_data: File_data) {
         const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
-        const file_url = data.body.url;
+        const file_url = data.url;
         window.open(file_url, '_blank');
     }
 

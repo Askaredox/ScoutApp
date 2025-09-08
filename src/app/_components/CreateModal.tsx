@@ -11,6 +11,12 @@ type CreateModalProps = {
 
 const CreateModal: React.FC<CreateModalProps> = ({ title, toggleModal, onClose, onSubmit, children }) => {
   const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
+    onSubmit(e);
+  }
+
   return (
     <div id="createModal" tabIndex={-1} aria-hidden="true" className={"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 " + (toggleModal ? "" : "hidden")}>
       <div className="relative w-full max-w-2xl mx-auto p-4">
@@ -24,7 +30,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ title, toggleModal, onClose, 
             </button>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {children}
             </div>
@@ -43,7 +49,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ title, toggleModal, onClose, 
               }
               {
                 !loading && (
-                  <button type="submit" onClick={() => setLoading(true)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white cursor-pointer text-base font-medium px-6 py-3 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-800 transition">
+                  <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white cursor-pointer text-base font-medium px-6 py-3 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-800 transition">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                       <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                     </svg>

@@ -94,9 +94,9 @@ export const refreshAuthToken = async () => {
 
     const data = await response.json();
 
-    if (data.body.access_token) {
-        Cookies.set("accessToken", data.body.access_token, { secure: true, httpOnly: false });
-        Cookies.set("idToken", data.body.id_token, { secure: true, httpOnly: false });
+    if (data.access_token) {
+        Cookies.set("accessToken", data.access_token, { secure: true, httpOnly: false });
+        Cookies.set("idToken", data.id_token, { secure: true, httpOnly: false });
     } else {
         console.error("Failed to refresh token:", data);
     }

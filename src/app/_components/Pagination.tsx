@@ -3,10 +3,10 @@ import React from 'react';
 
 type PaginationProps = {
     paginatedData: Metadata | null;
-    update_announcement_url: (url: string) => void;
+    update_event_url: (url: string) => void;
 };
 
-const Pagination: React.FC<PaginationProps> = ({ paginatedData, update_announcement_url }) => {
+const Pagination: React.FC<PaginationProps> = ({ paginatedData, update_event_url }) => {
     if (!paginatedData || !paginatedData.metadata) {
         return null; // No data to display
     }
@@ -27,12 +27,12 @@ const Pagination: React.FC<PaginationProps> = ({ paginatedData, update_announcem
             {/* Controles */}
             <div className="flex items-center gap-1">
                 <button
-                    onClick={() => update_announcement_url(paginatedData.metadata.links.first)}
+                    onClick={() => update_event_url(paginatedData.metadata.links.first)}
                     disabled={!paginatedData.metadata.links.first}
                     className="px-3 py-2 rounded-l-md border bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40"
                 >⏮</button>
                 <button
-                    onClick={() => update_announcement_url(paginatedData.metadata.links.previous)}
+                    onClick={() => update_event_url(paginatedData.metadata.links.previous)}
                     disabled={!paginatedData.metadata.links.previous}
                     className="px-3 py-2 border bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40"
                 >◀</button>
@@ -40,12 +40,12 @@ const Pagination: React.FC<PaginationProps> = ({ paginatedData, update_announcem
                     Página <strong>{paginatedData.metadata.page}</strong> de <strong>{paginatedData.metadata.total_pages}</strong>
                 </span>
                 <button
-                    onClick={() => update_announcement_url(paginatedData.metadata.links.next)}
+                    onClick={() => update_event_url(paginatedData.metadata.links.next)}
                     disabled={!paginatedData.metadata.links.next}
                     className="px-3 py-2 border bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40"
                 >▶</button>
                 <button
-                    onClick={() => update_announcement_url(paginatedData.metadata.links.last)}
+                    onClick={() => update_event_url(paginatedData.metadata.links.last)}
                     disabled={!paginatedData.metadata.links.last}
                     className="px-3 py-2 rounded-r-md border bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40"
                 >⏭</button>

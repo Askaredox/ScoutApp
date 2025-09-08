@@ -106,7 +106,7 @@ export default function AdminBiblioteca() {
                 .then((folder_data) => {
                     const folders: Folder_data[] = [];
                     const files: File_data[] = [];
-                    folder_data.body.forEach((data: Folder_data | File_data) => {
+                    folder_data.forEach((data: Folder_data | File_data) => {
                         if (data.type === 'FOLDER') {
                             folders.push(data as Folder_data);
                         } else if (data.type === 'FILE') {
@@ -161,8 +161,8 @@ export default function AdminBiblioteca() {
         };
         request('POST', '/file', 'application/json', token, JSON.stringify(data))
             .then(async (folder_data) => {
-                await upload_presigned_url(newFileD, folder_data.body.file_data.url);
-                await upload_thumbnail(thumbnail, folder_data.body.thumbnail_data.url);
+                await upload_presigned_url(newFileD, folder_data.file_data.url);
+                await upload_thumbnail(thumbnail, folder_data.thumbnail_data.url);
                 alert("Archivo subido correctamente");
                 update_folders();
                 setNewFileModal(false);
@@ -195,7 +195,7 @@ export default function AdminBiblioteca() {
 
     async function view_file(file_data: File_data) {
         const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
-        const file_url = data.body.url;
+        const file_url = data.url;
         window.open(file_url, '_blank');
     }
 
