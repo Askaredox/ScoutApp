@@ -215,7 +215,7 @@ export default function AdminBiblioteca() {
         }
         const token = Cookies.get('idToken');
         request('DELETE', '/folder?id_folder=' + deleteId.split('#')[1], 'application/json', token, null
-        ).then((res) => {
+        ).then((_) => {
             alert("Folder eliminado correctamente");
             update_folders();
             setDeleteFolderModal(false);
@@ -235,7 +235,7 @@ export default function AdminBiblioteca() {
         }
         const token = Cookies.get('idToken');
         request('DELETE', '/file?id_file=' + deleteId.split('#')[1], 'application/json', token, null
-        ).then((res) => {
+        ).then((_) => {
             alert("Documento eliminado correctamente");
             update_folders();
             setDeleteFileModal(false);

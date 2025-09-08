@@ -34,8 +34,6 @@ export default function AdminEvent() {
   const [updateEventportrait, setUpdateEventportrait] = useState<File | null>(null);
   const [updateEventinformation, setUpdateEventinformation] = useState<File | null>(null);
 
-  const [eventEditData, seteventEditData] = useState<boolean[]>([]);
-
   const [deleteEventModal, setDeleteEventModal] = useState<boolean>(false);
   const [deleteEventId, setDeleteEventId] = useState<string>('');
 
@@ -68,7 +66,6 @@ export default function AdminEvent() {
     request('GET', url, "application/json", token, null)
       .then((event_data_res) => {
         const count = event_data_res.metadata.total;
-        seteventEditData(new Array(count).fill(false));
         const events: Event[] = [];
         const event_meta: Metadata = {
           metadata: event_data_res.metadata,
@@ -99,7 +96,6 @@ export default function AdminEvent() {
     request('GET', '/event_meta?page=' + page + '&per_page=' + per_page, "application/json", token, null)
       .then((event_data_res) => {
         const count = event_data_res.metadata.total;
-        seteventEditData(new Array(count).fill(false));
         const events: Event[] = [];
         const event_meta: Metadata = {
           metadata: event_data_res.metadata,
@@ -233,25 +229,6 @@ export default function AdminEvent() {
   }
 
 
-  function toggleDropdown(i: number, activate: boolean | null = null): void {
-    setTimeout(() => {
-      if (activate !== null) {
-        seteventEditData(prevState => {
-          const newState = [...prevState];
-          newState[i] = activate;
-          return newState;
-        });
-        return;
-      }
-      seteventEditData(prevState => {
-        const newState = [...prevState];
-        newState[i] = !newState[i];
-        return newState;
-      });
-    }, 150); // Delay to allow the click event to register before toggling the state
-
-  }
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -301,7 +278,7 @@ export default function AdminEvent() {
               </tr>
             }
             dataRows={
-              filteredEvents.map((a, i) => (
+              filteredEvents.map((a, _) => (
                 <tr key={a.id_event} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-4 py-3 font-medium">{a.title}</td>
                   <td className="px-4 py-3 truncate max-w-sm">{a.description}</td>
