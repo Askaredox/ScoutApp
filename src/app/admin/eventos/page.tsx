@@ -65,7 +65,6 @@ export default function AdminEvent() {
     const token = Cookies.get('idToken');
     request('GET', url, "application/json", token, null)
       .then((event_data_res) => {
-        const count = event_data_res.metadata.total;
         const events: Event[] = [];
         const event_meta: Metadata = {
           metadata: event_data_res.metadata,
@@ -95,7 +94,6 @@ export default function AdminEvent() {
     setReady(false);
     request('GET', '/event_meta?page=' + page + '&per_page=' + per_page, "application/json", token, null)
       .then((event_data_res) => {
-        const count = event_data_res.metadata.total;
         const events: Event[] = [];
         const event_meta: Metadata = {
           metadata: event_data_res.metadata,
@@ -278,7 +276,7 @@ export default function AdminEvent() {
               </tr>
             }
             dataRows={
-              filteredEvents.map((a, _) => (
+              filteredEvents.map((a) => (
                 <tr key={a.id_event} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-4 py-3 font-medium">{a.title}</td>
                   <td className="px-4 py-3 truncate max-w-sm">{a.description}</td>
