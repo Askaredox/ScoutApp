@@ -1,6 +1,6 @@
 'use client';
 
-import { Announcement, Announcement_response } from "@/utils/interfaces";
+import { Event, Event_response } from "@/utils/interfaces";
 import { getGroup, isAuthenticated, refreshAuthToken, request } from "@/utils/utils";
 import Cookies from "js-cookie";
 import Image from "next/image";
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 export default function Admin() {
     const { replace, push } = useRouter();
-    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+    const [events, setEvents] = useState<Event[]>([]);
     const [sidenav, setSidenav] = useState(false);
     const [ready, setReady] = useState<boolean>(false);
 
@@ -27,23 +27,23 @@ export default function Admin() {
     async function get_group() {
         const user = await getGroup();
         if (user.groups == 'Admin') {
-            update_announcements();
+            update_events();
         }
         else {
             replace("/");
         }
     }
 
-    function update_announcements() {
+    function update_events() {
         const token = Cookies.get('idToken');
         if (token) {
             setReady(false);
             request('GET', '/event', 'application/json', token, null)
-                .then((announcement_data) => {
-                    const announcements: Announcement[] = [];
-                    announcement_data.forEach((data: Announcement_response) => {
+                .then((event_data) => {
+                    const events: Event[] = [];
+                    event_data.forEach((data: Event_response) => {
                         const a_data = {
-                            id_announcement: data.PK,
+                            id_event: data.PK,
                             title: data.title,
                             description: data.description,
                             post: data.post,
@@ -51,9 +51,9 @@ export default function Admin() {
                             created: data.created,
                             expire_date: data.expire_date
                         }
-                        announcements.push(a_data);
+                        events.push(a_data);
                     });
-                    setAnnouncements(announcements);
+                    setEvents(events);
                     setReady(true);
                 })
                 .catch((err) => console.log(err))
@@ -189,16 +189,16 @@ export default function Admin() {
                         <span className="sr-only">Loading...</span>
                     </div>
                 )}
-                {announcements.map((announcement) => (
+                {events.map((Event) => (
                     <div
-                        key={announcement.id_announcement}
+                        key={Event.id_event}
                         className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-shadow hover:shadow-lg"
                     >
-                        <a href={announcement.information} target="_blank" rel="noopener noreferrer">
+                        <a href={Event.information} target="_blank" rel="noopener noreferrer">
                             <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-2xl">
                                 <Image
-                                    src={announcement.post}
-                                    alt={announcement.title}
+                                    src={Event.post}
+                                    alt={Event.title}
                                     fill
                                     className="object-cover transition-transform duration-300 hover:scale-105"
                                 />
@@ -207,17 +207,17 @@ export default function Admin() {
                         <div className="p-5 flex flex-col justify-between h-full">
                             <div className="mb-4">
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">
-                                    {announcement.title}
+                                    {Event.title}
                                 </h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
 
-                                    📅 {new Date(Number(announcement.expire_date) * 1000).toLocaleDateString()} {/* Suponiendo que tienes `announcement.date` como string */}
+                                    📅 {new Date(Number(Event.expire_date) * 1000).toLocaleDateString()} {/* Suponiendo que tienes `Event.date` como string */}
                                 </p>
                                 <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
-                                    {announcement.description}
+                                    {Event.description}
                                 </p>
                                 <a
-                                    href={announcement.information}
+                                    href={Event.information}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
