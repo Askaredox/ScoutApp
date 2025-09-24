@@ -183,7 +183,7 @@ export default function AdminBiblioteca() {
             alert("No se ha seleccionado ningun archivo");
             return;
         }
-        if (e.target.files[0].size > 20000000) {
+        if (e.target.files[0].size > 25 * 1000 * 1000) {
             alert("El archivo es demasiado grande");
             return;
         }
@@ -487,7 +487,7 @@ export default function AdminBiblioteca() {
                                 <div className="w-full my-4">
                                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Subir archivo</label>
                                     <input onChange={handleFileChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file"></input>
-                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">.pdf .jpg .jpeg .png .mp4 (MAX. 20MB).</p>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">.pdf .jpg .jpeg .png .mp4 (MAX. 25MB).</p>
                                 </div>
                                 <div className="my-4">
                                     <label className="inline-flex items-center cursor-pointer">
