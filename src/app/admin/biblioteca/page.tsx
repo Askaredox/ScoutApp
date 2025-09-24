@@ -153,7 +153,7 @@ export default function AdminBiblioteca() {
         const parent_id = url[url.length - 1].id
         const token = Cookies.get('idToken');
         request('POST', '/folder', 'application/json', token, JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': newFolderName, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
-            .then((folder_data) => {
+            .then(() => {
                 update_folders();
                 setNewFolderModal(false);
                 setNewFolderName('');
