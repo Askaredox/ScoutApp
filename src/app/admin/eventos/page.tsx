@@ -7,7 +7,7 @@ import DataTable from '@/app/_components/Table';
 import { Event, Event_response, Metadata } from '@/utils/interfaces';
 import { formatDateToYYYYMMDD, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from '@/utils/utils';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import AddButton from '@/app/_components/AddButton';
 import Cookies from 'js-cookie';
@@ -18,11 +18,13 @@ export default function AdminEvent() {
   const [event_data, setEvent_data] = useState<Metadata | null>(null);
   const [filteredEvents, setFilteredEvents] = useState(event_data?.data || []);
   const [newEventModal, setNewEventModal] = useState<boolean>(false);
-  const [eventsubject, seteventsubject] = useState<string>('');
-  const [eventshort_description, seteventshort_description] = useState<string>('');
-  const [eventportrait, seteventportrait] = useState<File | null>(null);
-  const [eventinformation, seteventinformation] = useState<File | null>(null);
-  const [eventexpire, seteventexpire] = useState<string>('');
+  const [eventsubject, setEventsubject] = useState<string>('');
+  const [eventshort_description, setEventshort_description] = useState<string>('');
+  const [eventportrait, setEventportrait] = useState<File | null>(null);
+  const [eventinformation, setEventinformation] = useState<File | null>(null);
+  const eventPortraitRef = useRef(null);
+  const eventInformationRef = useRef(null);
+  const [eventexpire, setEventexpire] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState("");
 
   const [updateEventModal, setUpdateEventModal] = useState<boolean>(false);
@@ -38,6 +40,20 @@ export default function AdminEvent() {
   const [deleteEventId, setDeleteEventId] = useState<string>('');
 
   const { replace } = useRouter();
+
+  const resetEventPortraitRef = () => {
+    if (eventPortraitRef.current) {
+      (eventPortraitRef.current as HTMLInputElement).value = "";
+      setEventinformation(null);
+
+    }
+  };
+  const resetEventInformationRef = () => {
+    if (eventInformationRef.current) {
+      (eventInformationRef.current as HTMLInputElement).value = "";
+      setEventinformation(null);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -120,7 +136,6 @@ export default function AdminEvent() {
   }
 
   function openUpdateEventModal(id: string, subject: string, short_description: string, expire: string) {
-    console.log(id, subject, short_description, expire);
     setUpdateEventModal(true);
     setUpdateEventid(id);
     setUpdateEventsubject(subject);
@@ -133,26 +148,39 @@ export default function AdminEvent() {
     setDeleteEventId(id);
   }
 
+  function closeCreateEventModal() {
+    setNewEventModal(false);
+    setEventsubject('');
+    setEventshort_description('');
+    setEventexpire('');
+    resetEventPortraitRef();
+    resetEventInformationRef();
+  }
+
   async function newEvent(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = {
       title: eventsubject,
       description: eventshort_description,
+      expire_date: eventexpire,
       image_name: eventportrait?.name,
       information_name: eventinformation?.name,
-      expire_date: eventexpire
     };
     const token = Cookies.get('idToken');
     request('POST', '/event', "application/json", token, JSON.stringify(data))
       .then(async (event) => {
-        console.log(event);
         if (eventportrait) // check if the file is null
           await upload_presigned_url(eventportrait, event.post_data.url);
         if (eventinformation) // check if the file is null
           await upload_presigned_url(eventinformation, event.information_data.url);
         alert("Archivo subido correctamente");
-        update_event()
-        setNewEventModal(false)
+        update_event();
+        setNewEventModal(false);
+        setEventsubject('');
+        setEventshort_description('');
+        setEventexpire('');
+        resetEventPortraitRef();
+        resetEventInformationRef();
       }).catch((err) => console.error(err))
     //.finally(() => setNewFileSpinner(false));
   }
@@ -200,7 +228,7 @@ export default function AdminEvent() {
       alert("No se ha seleccionado ningun archivo");
       return;
     }
-    if (e.target.files[0].size > 20000000) {
+    if (e.target.files[0]?.size > 20000000) {
       alert("El archivo es demasiado grande");
       return;
     }
@@ -215,15 +243,14 @@ export default function AdminEvent() {
       alert("No se ha seleccionado ningun archivo");
       return;
     }
-    if (e.target.files[0].size > 20000000) {
+    if (e.target.files[0]?.size > 20000000) {
       alert("El archivo es demasiado grande");
       return;
     }
-    //console.log(e.target.files[0]);
     if (type == 'portrait')
-      seteventportrait(e.target.files[0]);
+      setEventportrait(e.target.files[0]);
     else if (type == 'information')
-      seteventinformation(e.target.files[0]);
+      setEventinformation(e.target.files[0]);
   }
 
 
@@ -266,11 +293,11 @@ export default function AdminEvent() {
             ready={ready}
             headerRows={
               <tr>
+                <th className="px-4 py-3 text-left">Banner</th>
                 <th className="px-4 py-3 text-left">Título</th>
                 <th className="px-4 py-3 text-left">Descripción</th>
                 <th className="px-4 py-3 text-left">Expira</th>
                 <th className="px-4 py-3 text-left">Creado</th>
-                <th className="px-4 py-3 text-left">Banner</th>
                 <th className="px-4 py-3 text-left">PDF</th>
                 <th className="px-4 py-3 text-right">Acciones</th>
               </tr>
@@ -278,13 +305,13 @@ export default function AdminEvent() {
             dataRows={
               filteredEvents.map((a) => (
                 <tr key={a.id_event} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-4 py-3">
+                    <Image src={a.post} width={60} height={0} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
+                  </td>
                   <td className="px-4 py-3 font-medium">{a.title}</td>
                   <td className="px-4 py-3 truncate max-w-sm">{a.description}</td>
                   <td className="px-4 py-3">{new Date(Number(a.expire_date) * 1000).toLocaleDateString()}</td>
                   <td className="px-4 py-3">{new Date(Number(a.created) * 1000).toLocaleDateString()}</td>
-                  <td className="px-4 py-3">
-                    <Image src={a.post} width={60} height={0} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
-                  </td>
                   <td className="px-4 py-3">
                     <a href={a.information} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                       Ver PDF
@@ -324,34 +351,34 @@ export default function AdminEvent() {
       <CreateModal
         title="Crear nuevo Evento"
         toggleModal={newEventModal}
-        onClose={() => setNewEventModal(false)}
+        onClose={closeCreateEventModal}
         onSubmit={newEvent}
       >
         <div>
-          <div>
+          <div className="mb-4">
             <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
-            <input type="text" id="subject" name="subject" value={eventsubject} onChange={(e) => seteventsubject(e.target.value)} placeholder="Título del Evento" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
+            <input type="text" id="subject" name="subject" value={eventsubject} onChange={(e) => setEventsubject(e.target.value)} placeholder="Título del Evento" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
           </div>
 
-          <div> {// TODO: Cambiar a textarea
+          <div className="mb-4"> {
           }
             <label htmlFor="descr" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
-            <input type="text" id="descr" name="descr" value={eventshort_description} onChange={(e) => seteventshort_description(e.target.value)} placeholder="Breve descripción" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
+            <textarea id="descr" name="descr" value={eventshort_description} onChange={(e) => setEventshort_description(e.target.value)} placeholder="Breve descripción del evento" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
           </div>
 
-          <div>
+          <div className="mb-4">
             <label htmlFor="expire" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de expiración</label>
-            <input type="date" id="expire" name="expire" value={eventexpire} onChange={(e) => seteventexpire(e.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
+            <input type="date" id="expire" name="expire" value={eventexpire} onChange={(e) => setEventexpire(e.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
           </div>
 
-          <div>
+          <div className="mb-4">
             <label htmlFor="portrait" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Imagen de portada</label>
-            <input type="file" id="portrait" name="portrait" onChange={(e) => handleFileChange(e, 'portrait')} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white" />
+            <input type="file" id="portrait" name="portrait" ref={eventPortraitRef} onChange={(e) => handleFileChange(e, 'portrait')} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white cursor-pointer" required />
           </div>
 
           <div className="sm:col-span-2">
             <label htmlFor="information" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ficha técnica (PDF, DOC, etc.)</label>
-            <input type="file" id="information" name="information" onChange={(e) => handleFileChange(e, 'information')} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white" />
+            <input type="file" id="information" name="information" ref={eventInformationRef} onChange={(e) => handleFileChange(e, 'information')} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white cursor-pointer" />
           </div>
         </div>
       </CreateModal>
