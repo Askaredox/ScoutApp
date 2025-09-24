@@ -1,6 +1,7 @@
 'use client';
 
 import AddButton from '@/app/_components/AddButton';
+import CreateModal from '@/app/_components/CreateModal';
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
 import { File_data, Folder_data } from "@/utils/interfaces";
@@ -8,7 +9,7 @@ import { create_thumbnail, getGroup, isAuthenticated, refreshAuthToken, request,
 import Cookies from 'js-cookie';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.Dispatch<React.SetStateAction<{ path: string, id: string }[]>>) {
@@ -62,22 +63,28 @@ export default function AdminBiblioteca() {
     const [folders, setFolders] = useState<Folder_data[]>([]);
     const [files, setFiles] = useState<File_data[]>([]);
     const [newFolderModal, setNewFolderModal] = useState<boolean>(false);
+    const [newFolderName, setNewFolderName] = useState<string>('');
     const [newFolderCanView, setNewFolderCanView] = useState<boolean>(true);
     const [newFolderCanDownload, setNewFolderCanDownload] = useState<boolean>(true);
     const [newFileModal, setNewFileModal] = useState<boolean>(false);
-    const [newFileCanView, setNewFileCanView] = useState<boolean>(true);
     const [newFileName, setNewFileName] = useState<string>('');
+    const [newFileCanView, setNewFileCanView] = useState<boolean>(true);
     const [newFileCanDownload, setNewFileCanDownload] = useState<boolean>(true);
     const [newFileDescription, setNewFileDescription] = useState<string>('');
     const [newFileD, setNewFileD] = useState<File | null>(null);
-    const [newFileSpinner, setNewFileSpinner] = useState<boolean>(false);
-    const [newFolderSpinner, setNewFolderSpinner] = useState<boolean>(false);
+    const newFileDRef = useRef(null);
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [deleteFileModal, setDeleteFileModal] = useState<boolean>(false);
     const [deleteFolderModal, setDeleteFolderModal] = useState<boolean>(false);
     const [ready, setReady] = useState(false);
     const { replace } = useRouter();
 
+    const resetFileDRef = () => {
+        if (newFileDRef.current) {
+            (newFileDRef.current as HTMLInputElement).value = "";
+            setNewFileD(null);
+        }
+    };
 
     useEffect(() => {
         if (!isAuthenticated()) {
@@ -123,18 +130,33 @@ export default function AdminBiblioteca() {
                 .catch((err) => console.log(err))
     }
 
-    function newFolder(e: React.FormEvent<HTMLFormElement>) {
+    function closeCreateFolderModal() {
+        setNewFolderModal(false);
+        setNewFolderName('');
+        setNewFolderCanView(true);
+        setNewFolderCanDownload(true);
+        resetFileDRef();
+    }
+
+    function closeCreateFileModal() {
+        setNewFileModal(false);
+        setNewFileName('');
+        setNewFileCanView(true);
+        setNewFileCanDownload(true);
+        setNewFileDescription('');
+        resetFileDRef();
+    }
+
+
+    async function newFolder(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         const parent_id = url[url.length - 1].id
-        const folder_name = ((e.target as HTMLFormElement).elements[0] as HTMLInputElement).value
         const token = Cookies.get('idToken');
-        setNewFolderSpinner(true);
-        request('POST', '/folder', 'application/json', token, JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': folder_name, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
+        request('POST', '/folder', 'application/json', token, JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': newFolderName, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
             .then((folder_data) => {
-                console.log(folder_data.body);
                 update_folders();
                 setNewFolderModal(false);
-                setNewFolderSpinner(false);
+                setNewFolderName('');
             })
     }
 
@@ -153,7 +175,6 @@ export default function AdminBiblioteca() {
             return;
         }
 
-        setNewFileSpinner(true);
         const token = Cookies.get('idToken');
         const data = {
             'id_parent_folder': parent_id,
@@ -169,8 +190,12 @@ export default function AdminBiblioteca() {
                 alert("Archivo subido correctamente");
                 update_folders();
                 setNewFileModal(false);
-            }).catch((err) => console.log(err))
-            .finally(() => setNewFileSpinner(false));
+                resetFileDRef();
+                setNewFileName('');
+                setNewFileDescription('');
+                setNewFileCanView(true);
+                setNewFileCanDownload(true);
+            }).catch((err) => console.log(err));
     }
     async function upload_thumbnail(file: File, url: string) {
         if (file.type == "image/jpeg" || file.type == "image/png") {
@@ -405,154 +430,68 @@ export default function AdminBiblioteca() {
 
             </div>
 
-
-            <div id="crud-modal-folder" tabIndex={-1} className={"overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full " + (newFolderModal ? "" : "hidden")}>
-                <div className="relative p-4 w-full max-w-md max-h-full mx-auto">
-
-                    <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-
-                        <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                Folder Nuevo
-                            </h3>
-                            <button type="button" onClick={() => setNewFolderModal(false)} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="crud-modal">
-                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                </svg>
-                                <span className="sr-only">Cerrar</span>
-                            </button>
-                        </div>
-                        <form className="p-4 md:p-5" onSubmit={(e) => newFolder(e)} >
-                            <div className="grid gap-4 mb-4 grid-cols-2">
-                                <div className="col-span-2">
-                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre del folder</label>
-                                    <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Folder sin nombre" required={true}>
-                                    </input>
-                                </div>
-                                <div >
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={() => { setNewFolderCanView(!newFolderCanView) }} className="sr-only peer" checked={newFolderCanView}></input>
-                                        <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Visible</span>
-                                    </label>
-                                </div>
-                                <div>
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={() => { setNewFolderCanDownload(!newFolderCanDownload) }} className="sr-only peer" checked={newFolderCanDownload}></input>
-                                        <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Descargable</span>
-                                    </label>
-                                </div>
-                            </div>
-                            {
-                                newFolderSpinner ?
-                                    (
-                                        <div role="status" className="flex justify-center items-center">
-                                            <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                                            </svg>
-                                            <span className="sr-only">Cargando...</span>
-                                        </div>
-                                    ) :
-                                    (
-                                        <button type="submit" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            <svg className="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd"></path></svg>
-                                            Crear folder
-                                        </button>
-                                    )
-                            }
-                        </form>
+            <CreateModal
+                title="Crear nuevo Folder"
+                toggleModal={newFolderModal}
+                onClose={closeCreateFolderModal}
+                onSubmit={newFolder}
+            >
+                <div>
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del folder</label>
+                        <input value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Folder sin nombre" required={true}>
+                        </input>
+                    </div>
+                    <div className="mb-6">
+                        <label className="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" onChange={() => { setNewFolderCanView(!newFolderCanView) }} className="sr-only peer" checked={newFolderCanView}></input>
+                            <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Visible</span>
+                        </label>
+                    </div>
+                    <div className="mb-6">
+                        <label className="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" onChange={() => { setNewFolderCanDownload(!newFolderCanDownload) }} className="sr-only peer" checked={newFolderCanDownload}></input>
+                            <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Descargable</span>
+                        </label>
                     </div>
                 </div>
-            </div>
-            <div id="crud-modal-file" tabIndex={-1} className={"overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full " + (newFileModal ? "" : "hidden")}>
-                <div className="relative p-4 w-full max-w-md max-h-full mx-auto">
+            </CreateModal>
 
-                    <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-
-                        <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                Subir un nuevo archivo
-                            </h3>
-                            <button type="button" onClick={() => setNewFileModal(false)} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="crud-modal">
-                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                </svg>
-                                <span className="sr-only">Cerrar</span>
-                            </button>
-                        </div>
-                        <form className="p-4 md:p-5" onSubmit={newFile} >
-                            <div className="flex flex-col mb-4">
-                                <div className="w-full my-4">
-                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Subir archivo</label>
-                                    <input onChange={handleFileChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file"></input>
-                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">.pdf .jpg .jpeg .png .mp4 (MAX. 25MB).</p>
-                                </div>
-                                <div className="my-4">
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={() => { setNewFileCanView(!newFileCanView) }} className="sr-only peer" checked={newFileCanView}></input>
-                                        <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Visible</span>
-                                    </label>
-                                </div>
-                                <div className="my-4">
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" onChange={() => { setNewFileCanDownload(!newFileCanDownload) }} className="sr-only peer" checked={newFileCanDownload}></input>
-                                        <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Descargable</span>
-                                    </label>
-                                </div>
-                                <div className="my-4">
-                                    <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
-                                    <textarea onChange={(e) => { setNewFileDescription(e.target.value) }} value={newFileDescription} id="message" rows={4} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Descripción del archivo..."></textarea>
-                                </div>
-                            </div>
-                            {
-                                newFileSpinner ?
-                                    (
-                                        <div role="status" className="flex justify-center items-center">
-                                            <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                                            </svg>
-                                            <span className="sr-only">Cargando...</span>
-                                        </div>
-                                    ) :
-                                    (
-                                        <button type="submit" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            <svg className="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd"></path></svg>
-                                            Subir archivo
-                                        </button>
-                                    )
-                            }
-
-                        </form>
+            <CreateModal
+                title="Subir nuevo Archivo"
+                toggleModal={newFileModal}
+                onClose={closeCreateFileModal}
+                onSubmit={newFile}
+            >
+                <div>
+                    <div className="w-full mb-4">
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Subir archivo</label>
+                        <input type="file" onChange={handleFileChange} ref={newFileDRef} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input"></input>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">.pdf .jpg .jpeg .png .mp4 (MAX. 25MB).</p>
+                    </div>
+                    <div className="my-4">
+                        <label className="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" onChange={() => { setNewFileCanView(!newFileCanView) }} className="sr-only peer" checked={newFileCanView}></input>
+                            <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Visible</span>
+                        </label>
+                    </div>
+                    <div className="my-4">
+                        <label className="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" onChange={() => { setNewFileCanDownload(!newFileCanDownload) }} className="sr-only peer" checked={newFileCanDownload}></input>
+                            <div className="relative w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Descargable</span>
+                        </label>
+                    </div>
+                    <div className="ma-4">
+                        <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
+                        <textarea onChange={(e) => { setNewFileDescription(e.target.value) }} value={newFileDescription} id="message" rows={4} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Descripción del archivo..."></textarea>
                     </div>
                 </div>
-            </div>
-            <div id="deleteFileModal" tabIndex={-1} aria-hidden="true" className={"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 " + (deleteFileModal ? "" : "hidden")}>
-                <div className="relative w-full max-w-2xl mx-auto p-4">
-                    <div className="relative rounded-2xl bg-white shadow-xl dark:bg-gray-900 px-6 py-8">
-                        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Eliminar documento</h3>
-                            <button type="button" onClick={() => setDeleteFileModal(false)} className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition" aria-label="Cerrar">
-                                <svg className="w-6 h-6 text-gray-600 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <svg className="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                        <p className="mb-4 text-gray-500 dark:text-gray-300">¿Seguro que desea eliminar este Documento?</p>
-                        <div className="flex justify-center items-center space-x-4">
-                            <button onClick={() => setDeleteFileModal(false)} data-modal-toggle="deleteModal" type="button" className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancelar</button>
-                            <button onClick={(e) => deleteFile(e)} type="submit" className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">Yes, seguro</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </CreateModal>
+
             <div id="deleteFolderModal" tabIndex={-1} aria-hidden="true" className={"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 " + (deleteFolderModal ? "" : "hidden")}>
                 <div className="relative w-full max-w-2xl mx-auto p-4">
                     <div className="relative rounded-2xl bg-white shadow-xl dark:bg-gray-900 px-6 py-8">
@@ -571,6 +510,29 @@ export default function AdminBiblioteca() {
                         <div className="flex justify-center items-center space-x-4">
                             <button onClick={() => setDeleteFolderModal(false)} data-modal-toggle="deleteModal" type="button" className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancelar</button>
                             <button onClick={(e) => deleteFolder(e)} type="submit" className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">Yes, seguro</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="deleteFileModal" tabIndex={-1} aria-hidden="true" className={"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 " + (deleteFileModal ? "" : "hidden")}>
+                <div className="relative w-full max-w-2xl mx-auto p-4">
+                    <div className="relative rounded-2xl bg-white shadow-xl dark:bg-gray-900 px-6 py-8">
+                        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Eliminar documento</h3>
+                            <button type="button" onClick={() => setDeleteFileModal(false)} className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition" aria-label="Cerrar">
+                                <svg className="w-6 h-6 text-gray-600 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <svg className="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        <p className="mb-4 text-gray-500 dark:text-gray-300">¿Seguro que desea eliminar este Documento?</p>
+                        <div className="flex justify-center items-center space-x-4">
+                            <button onClick={() => setDeleteFileModal(false)} data-modal-toggle="deleteModal" type="button" className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancelar</button>
+                            <button onClick={(e) => deleteFile(e)} type="submit" className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">Yes, seguro</button>
                         </div>
                     </div>
                 </div>
