@@ -56,7 +56,7 @@ function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.
 }
 
 
-export default function AdminBiblioteca() {
+export default function UserBiblioteca() {
     const [url, setUrl] = useState([{ 'path': '/', 'id': '0' }]);
     const [folders, setFolders] = useState<Folder_data[]>([]);
     const [files, setFiles] = useState<File_data[]>([]);
@@ -71,18 +71,18 @@ export default function AdminBiblioteca() {
         }
         else {
             refreshAuthToken();
-            get_group(update_folders);
+            get_group();
         }
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [url]);
 
-    async function get_group(function_callback: () => void) {
+    async function get_group() {
         const user = await getGroup();
         if (user.groups == 'Admin') {
             replace("/admin/biblioteca");
         }
         else {
-            function_callback();
+            update_folders();
         }
     }
 

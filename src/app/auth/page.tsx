@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loader from "../_components/Loader";
 
-const Callback = () => {
+const Auth = () => {
     const { push } = useRouter();
 
     useEffect(() => {
@@ -23,9 +23,9 @@ const Callback = () => {
                 const response = await request('POST', "/token", 'application/json', null, JSON.stringify({ 'code': code, 'redirect_uri': `${window.location.origin}/auth` }));
                 if (response.error) { push("/login"); return; }
                 // Store tokens securely
-                Cookies.set("accessToken", response.access_token, { secure: true, httpOnly: false });
-                Cookies.set("idToken", response.id_token, { secure: true, httpOnly: false });
-                Cookies.set("refreshToken", response.refresh_token, { secure: true, httpOnly: false });
+                Cookies.set("accessToken", response.access_token, { secure: true });
+                Cookies.set("idToken", response.id_token, { secure: true });
+                Cookies.set("refreshToken", response.refresh_token, { secure: true });
                 const user = await getGroup();
                 if (user.groups == 'Admin') push("/admin");
                 else push("/");
@@ -36,9 +36,10 @@ const Callback = () => {
         };
 
         exchangeCodeForToken();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <Loader />;
 };
 
-export default Callback;
+export default Auth;

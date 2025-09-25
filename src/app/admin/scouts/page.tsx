@@ -40,7 +40,7 @@ export default function AdminScout() {
             refreshAuthToken();
             get_group();
         }
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     async function get_group() {

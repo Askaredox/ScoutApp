@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 
-export default function Admin() {
+export default function User() {
   const { replace, push } = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [sidenav, setSidenav] = useState(false);
@@ -22,6 +22,7 @@ export default function Admin() {
       refreshAuthToken();
       get_group();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function get_group() {
