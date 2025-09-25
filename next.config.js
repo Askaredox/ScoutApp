@@ -2,8 +2,8 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: [
-      process.env.NEXT_PUBLIC_S3_FILESYSTEM_URL,
-      process.env.NEXT_PUBLIC_S3_EVENTS_URL
+      process.env.NEXT_PUBLIC_S3_FILESYSTEM_URL || 'localhost',
+      process.env.NEXT_PUBLIC_S3_EVENTS_URL || 'localhost',
     ], // Add your domain here
   },
   webpack(config) {

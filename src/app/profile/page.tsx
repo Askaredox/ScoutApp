@@ -14,7 +14,7 @@ interface User_data {
 }
 
 
-export default function Normaluser() {
+export default function UserProfile() {
     const { back, replace } = useRouter();
     const [normaluser, setNormaluser] = useState<User_data>();
 
@@ -27,6 +27,7 @@ export default function Normaluser() {
             refreshAuthToken();
             get_group();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     async function get_group() {

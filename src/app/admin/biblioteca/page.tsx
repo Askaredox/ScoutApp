@@ -93,15 +93,15 @@ export default function AdminBiblioteca() {
         }
         else {
             refreshAuthToken();
-            get_group(update_folders);
+            get_group();
         }
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [url]);
 
-    async function get_group(function_callback: () => void) {
+    async function get_group() {
         const user = await getGroup();
         if (user.groups == 'Admin') {
-            function_callback();
+            update_folders();
         }
         else {
             replace("/biblioteca");
