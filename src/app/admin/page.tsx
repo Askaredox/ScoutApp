@@ -1,7 +1,8 @@
 'use client';
 
+import { AccessToken, getGroup } from '@/utils/auth';
 import { Event, Event_response } from "@/utils/interfaces";
-import { getGroup, isAuthenticated, refreshAuthToken, request } from "@/utils/utils";
+import { request } from '@/utils/request-utils';
 import Cookies from "js-cookie";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -15,11 +16,10 @@ export default function Admin() {
     const [ready, setReady] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!isAuthenticated()) {
+        if (!AccessToken.is_authenticated()) {
             replace("/login");
         }
         else {
-            refreshAuthToken();
             get_group();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,29 +36,27 @@ export default function Admin() {
     }
 
     function update_events() {
-        const token = Cookies.get('idToken');
-        if (token) {
-            setReady(false);
-            request('GET', '/event', 'application/json', token, null)
-                .then((event_data) => {
-                    const events: Event[] = [];
-                    event_data.forEach((data: Event_response) => {
-                        const a_data = {
-                            id_event: data.PK,
-                            title: data.title,
-                            description: data.description,
-                            post: data.post,
-                            information: data.information,
-                            created: data.created,
-                            expire_date: data.expire_date
-                        }
-                        events.push(a_data);
-                    });
-                    setEvents(events);
-                    setReady(true);
-                })
-                .catch((err) => console.log(err))
-        }
+        setReady(false);
+        request('GET', '/event', 'application/json')
+            .then((event_data) => {
+                const events: Event[] = [];
+                event_data.forEach((data: Event_response) => {
+                    const a_data = {
+                        id_event: data.PK,
+                        title: data.title,
+                        description: data.description,
+                        post: data.post,
+                        information: data.information,
+                        created: data.created,
+                        expire_date: data.expire_date
+                    }
+                    events.push(a_data);
+                });
+                setEvents(events);
+                setReady(true);
+            })
+            .catch((err) => console.log(err))
+
     }
 
     function logout() {

@@ -3,12 +3,13 @@ import Header from '@/app/_components/Header';
 import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
+import { AccessToken, getGroup } from '@/utils/auth';
 import { Event, Event_response, Metadata } from '@/utils/interfaces';
-import { formatDateToYYYYMMDD, getGroup, isAuthenticated, refreshAuthToken, request } from '@/utils/utils';
+import { request } from '@/utils/request-utils';
+import { formatDateToYYYYMMDD } from '@/utils/utils';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import Cookies from 'js-cookie';
 import Image from 'next/image';
 
 
@@ -32,12 +33,11 @@ export default function AdminScout() {
     const { replace } = useRouter();
 
     useEffect(() => {
-        if (!isAuthenticated()) {
+        if (!AccessToken.is_authenticated()) {
 
             replace("/login");
         }
         else {
-            refreshAuthToken();
             get_group();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -54,8 +54,7 @@ export default function AdminScout() {
     }
 
     function update_event_url(url: string) {
-        const token = Cookies.get('idToken');
-        request('GET', url, "application/json", token, null)
+        request('GET', url, "application/json")
             .then((event_data_res) => {
                 const count = event_data_res.metadata.total;
                 seteventEditData(new Array(count).fill(false));
@@ -85,9 +84,8 @@ export default function AdminScout() {
     }
 
     function update_users(page: number = 1, per_page: number = 10) {
-        const token = Cookies.get('idToken');
         setReady(false);
-        request('GET', '/event_meta?page=' + page + '&per_page=' + per_page, "application/json", token, null)
+        request('GET', '/event_meta?page=' + page + '&per_page=' + per_page, "application/json")
             .then((event_data_res) => {
                 const count = event_data_res.metadata.total;
                 seteventEditData(new Array(count).fill(false));
@@ -140,8 +138,7 @@ export default function AdminScout() {
             expire_date: formatDateToYYYYMMDD(new Date(Number(updateEventexpire) * 1000))
         };
 
-        const token = Cookies.get('idToken');
-        request('PUT', '/event?id_event=' + event_id, "application/json", token, JSON.stringify(data))
+        request('PUT', '/event?id_event=' + event_id, "application/json", JSON.stringify(data))
             .then(async (event) => {
                 console.log(event);
                 alert("Archivo subido correctamente");
@@ -153,9 +150,8 @@ export default function AdminScout() {
 
     function deleteEvent(e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        const token = Cookies.get('idToken');
         const event_id = deleteEventId.split('#')[1];
-        request('DELETE', '/event?id_event=' + event_id, "application/json", token, null)
+        request('DELETE', '/event?id_event=' + event_id, "application/json")
             .then(() => {
                 //update_event()
                 setDeleteEventModal(false)

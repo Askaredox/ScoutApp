@@ -4,13 +4,14 @@ import Header from '@/app/_components/Header';
 import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
+import { AccessToken, getGroup } from '@/utils/auth';
 import { Event, Event_response, Metadata } from '@/utils/interfaces';
-import { formatDateToYYYYMMDD, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from '@/utils/utils';
+import { request } from '@/utils/request-utils';
+import { formatDateToYYYYMMDD, upload_presigned_url } from '@/utils/utils';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import AddButton from '@/app/_components/AddButton';
-import Cookies from 'js-cookie';
 import Image from 'next/image';
 
 
@@ -56,12 +57,11 @@ export default function AdminEvent() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!AccessToken.is_authenticated()) {
 
       replace("/login");
     }
     else {
-      refreshAuthToken();
       get_group();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,8 +78,7 @@ export default function AdminEvent() {
   }
 
   function update_event_url(url: string) {
-    const token = Cookies.get('idToken');
-    request('GET', url, "application/json", token, null)
+    request('GET', url, "application/json")
       .then((event_data_res) => {
         const events: Event[] = [];
         const event_meta: Metadata = {
@@ -106,9 +105,8 @@ export default function AdminEvent() {
   }
 
   function update_event(page: number = 1, per_page: number = 10) {
-    const token = Cookies.get('idToken');;
     setReady(false);
-    request('GET', '/event_meta?page=' + page + '&per_page=' + per_page, "application/json", token, null)
+    request('GET', '/event_meta?page=' + page + '&per_page=' + per_page, "application/json")
       .then((event_data_res) => {
         const events: Event[] = [];
         const event_meta: Metadata = {
@@ -166,8 +164,7 @@ export default function AdminEvent() {
       image_name: eventportrait?.name,
       information_name: eventinformation?.name,
     };
-    const token = Cookies.get('idToken');
-    request('POST', '/event', "application/json", token, JSON.stringify(data))
+    request('POST', '/event', "application/json", JSON.stringify(data))
       .then(async (event) => {
         if (eventportrait) // check if the file is null
           await upload_presigned_url(eventportrait, event.post_data.url);
@@ -196,8 +193,7 @@ export default function AdminEvent() {
       expire_date: formatDateToYYYYMMDD(new Date(Number(updateEventexpire) * 1000 + 1000 * 60 * 60 * 24)) // Añadir un día para corregir el desfase
     };
 
-    const token = Cookies.get('idToken');
-    request('PUT', '/event?id_event=' + event_id, "application/json", token, JSON.stringify(data))
+    request('PUT', '/event?id_event=' + event_id, "application/json", JSON.stringify(data))
       .then(async (event) => {
         console.log(event);
         if (updateEventportrait) // check if the file is null
@@ -213,9 +209,8 @@ export default function AdminEvent() {
 
   function deleteEvent(e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    const token = Cookies.get('idToken');
     const event_id = deleteEventId.split('#')[1];
-    request('DELETE', '/event?id_event=' + event_id, "application/json", token, null)
+    request('DELETE', '/event?id_event=' + event_id, "application/json")
       .then(() => {
         update_event()
         setDeleteEventModal(false)

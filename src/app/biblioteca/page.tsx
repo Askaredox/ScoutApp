@@ -2,9 +2,9 @@
 
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
+import { AccessToken, getGroup } from '@/utils/auth';
 import { File_data, Folder_data } from "@/utils/interfaces";
-import { getGroup, isAuthenticated, refreshAuthToken, request } from "@/utils/utils";
-import Cookies from 'js-cookie';
+import { request } from '@/utils/request-utils';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
@@ -65,12 +65,11 @@ export default function UserBiblioteca() {
 
 
     useEffect(() => {
-        if (!isAuthenticated()) {
+        if (!AccessToken.is_authenticated()) {
 
             replace("/login");
         }
         else {
-            refreshAuthToken();
             get_group();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,29 +86,27 @@ export default function UserBiblioteca() {
     }
 
     function update_folders() {
-        const token = Cookies.get('idToken');
         setReady(false);
-        if (token)
-            request('GET', '/folder?folder=' + url[url.length - 1].id, 'application/json', token, null)
-                .then((folder_data) => {
-                    const folders: Folder_data[] = [];
-                    const files: File_data[] = [];
-                    folder_data.forEach((data: Folder_data | File_data) => {
-                        if (data.type === 'FOLDER') {
-                            folders.push(data as Folder_data);
-                        } else if (data.type === 'FILE') {
-                            files.push(data as File_data);
-                        }
-                    });
-                    setReady(true);
-                    setFolders(folders);
-                    setFiles(files);
-                })
-                .catch((err) => console.log(err))
+        request('GET', '/folder?folder=' + url[url.length - 1].id, 'application/json')
+            .then((folder_data) => {
+                const folders: Folder_data[] = [];
+                const files: File_data[] = [];
+                folder_data.forEach((data: Folder_data | File_data) => {
+                    if (data.type === 'FOLDER') {
+                        folders.push(data as Folder_data);
+                    } else if (data.type === 'FILE') {
+                        files.push(data as File_data);
+                    }
+                });
+                setReady(true);
+                setFolders(folders);
+                setFiles(files);
+            })
+            .catch((err) => console.log(err))
     }
 
     async function view_file(file_data: File_data) {
-        const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
+        const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json');
         const file_url = data.url;
         window.open(file_url, '_blank');
     }
