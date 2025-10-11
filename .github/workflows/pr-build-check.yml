@@ -1,0 +1,40 @@
+name: PR Build Check
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Check Next.js Build
+    runs-on: ubuntu-latest
+    
+    env:
+      NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+      NEXT_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID }}
+      NEXT_PUBLIC_COGNITO_DOMAIN: ${{ secrets.NEXT_PUBLIC_COGNITO_DOMAIN }}
+      NEXT_PUBLIC_COGNITO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_COGNITO_REDIRECT_URI }}
+      NEXT_PUBLIC_COGNITO_RESPONSE_TYPE: ${{ secrets.NEXT_PUBLIC_COGNITO_RESPONSE_TYPE }}
+      NEXT_PUBLIC_S3_EVENTS_URL: ${{ secrets.NEXT_PUBLIC_S3_EVENTS_URL }}
+      NEXT_PUBLIC_S3_FILESYSTEM_URL: ${{ secrets.NEXT_PUBLIC_S3_FILESYSTEM_URL }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint (same command Amplify uses)
+        run: npm run lint
+
+      - name: Run build
+        run: npm run build
