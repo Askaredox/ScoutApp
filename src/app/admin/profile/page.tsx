@@ -1,7 +1,7 @@
 'use client';
 
-import { getGroup, isAuthenticated, refreshAuthToken, request } from "@/utils/utils";
-import Cookies from "js-cookie";
+import { AccessToken, getGroup } from '@/utils/auth';
+import { request } from '@/utils/request-utils';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -20,11 +20,10 @@ export default function AdminProfile() {
 
 
     useEffect(() => {
-        if (!isAuthenticated()) {
+        if (!AccessToken.is_authenticated()) {
             replace("/login");
         }
         else {
-            refreshAuthToken();
             get_group();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,8 +40,7 @@ export default function AdminProfile() {
     }
 
     function update_user() {
-        const token = Cookies.get('idToken');
-        request('GET', '/user_info', "application/json", token, null)
+        request('GET', '/user_info', "application/json")
             .then((scout) => {
                 setNormaluser({ id_user: scout.sub, email: scout.email, email_verified: scout.email_verified, name: scout.name, groups: scout.groups });
             })

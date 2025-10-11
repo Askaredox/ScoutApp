@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Scouteca",
-  description: "Scouteca - Tu lugar para tener información scout",
+  description: "Descubre Scouteca: tu espacio para tener toda la información scout en un solo lugar.",
+  keywords: ["scouts", "scouteca", "guatemala", "caminantes", "documentos scout", "información scout"],
 };
 
 export default function RootLayout({

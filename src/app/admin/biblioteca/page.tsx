@@ -4,9 +4,11 @@ import AddButton from '@/app/_components/AddButton';
 import CreateModal from '@/app/_components/CreateModal';
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
+import { AccessToken, getGroup } from '@/utils/auth';
 import { File_data, Folder_data } from "@/utils/interfaces";
-import { create_thumbnail, getGroup, isAuthenticated, refreshAuthToken, request, upload_presigned_url } from "@/utils/utils";
-import Cookies from 'js-cookie';
+import { request } from '@/utils/request-utils';
+import { create_thumbnail, upload_presigned_url } from '@/utils/utils';
+
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from "react";
@@ -77,7 +79,7 @@ export default function AdminBiblioteca() {
     const [deleteFileModal, setDeleteFileModal] = useState<boolean>(false);
     const [deleteFolderModal, setDeleteFolderModal] = useState<boolean>(false);
     const [ready, setReady] = useState(false);
-    const { replace } = useRouter();
+    const { replace, push } = useRouter();
 
     const resetFileDRef = () => {
         if (newFileDRef.current) {
@@ -87,12 +89,10 @@ export default function AdminBiblioteca() {
     };
 
     useEffect(() => {
-        if (!isAuthenticated()) {
-
+        if (!AccessToken.is_authenticated()) {
             replace("/login");
         }
         else {
-            refreshAuthToken();
             get_group();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,25 +109,23 @@ export default function AdminBiblioteca() {
     }
 
     function update_folders() {
-        const token = Cookies.get('idToken');
         setReady(false)
-        if (token)
-            request('GET', '/folder?folder=' + url[url.length - 1].id, 'application/json', token, null)
-                .then((folder_data) => {
-                    const folders: Folder_data[] = [];
-                    const files: File_data[] = [];
-                    folder_data.forEach((data: Folder_data | File_data) => {
-                        if (data.type === 'FOLDER') {
-                            folders.push(data as Folder_data);
-                        } else if (data.type === 'FILE') {
-                            files.push(data as File_data);
-                        }
-                    });
-                    setReady(true);
-                    setFolders(folders);
-                    setFiles(files);
-                })
-                .catch((err) => console.log(err))
+        request('GET', '/folder?folder=' + url[url.length - 1].id, 'application/json')
+            .then((folder_data) => {
+                const folders: Folder_data[] = [];
+                const files: File_data[] = [];
+                folder_data.forEach((data: Folder_data | File_data) => {
+                    if (data.type === 'FOLDER') {
+                        folders.push(data as Folder_data);
+                    } else if (data.type === 'FILE') {
+                        files.push(data as File_data);
+                    }
+                });
+                setReady(true);
+                setFolders(folders);
+                setFiles(files);
+            })
+            .catch((err) => console.log(err))
     }
 
     function closeCreateFolderModal() {
@@ -151,8 +149,7 @@ export default function AdminBiblioteca() {
     async function newFolder(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         const parent_id = url[url.length - 1].id
-        const token = Cookies.get('idToken');
-        request('POST', '/folder', 'application/json', token, JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': newFolderName, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
+        request('POST', '/folder', 'application/json', JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': newFolderName, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
             .then(() => {
                 update_folders();
                 setNewFolderModal(false);
@@ -175,7 +172,6 @@ export default function AdminBiblioteca() {
             return;
         }
 
-        const token = Cookies.get('idToken');
         const data = {
             'id_parent_folder': parent_id,
             'name': folder_name,
@@ -183,7 +179,7 @@ export default function AdminBiblioteca() {
             'can_view': newFolderCanView,
             'description': newFileDescription,
         };
-        request('POST', '/file', 'application/json', token, JSON.stringify(data))
+        request('POST', '/file', 'application/json', JSON.stringify(data))
             .then(async (folder_data) => {
                 await upload_presigned_url(newFileD, folder_data.file_data.url);
                 await upload_thumbnail(thumbnail, folder_data.thumbnail_data.url);
@@ -222,9 +218,10 @@ export default function AdminBiblioteca() {
     }
 
     async function view_file(file_data: File_data) {
-        const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
-        const file_url = data.url;
-        window.open(file_url, '_blank');
+        push('/file?id_file=' + file_data.id.split('#')[1]);
+        //const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
+        //const file_url = data.url;
+        //window.open(file_url, '_blank');
     }
 
     function delete_folder(id: string) {
@@ -238,8 +235,7 @@ export default function AdminBiblioteca() {
             alert("No se ha seleccionado ningun folder");
             return;
         }
-        const token = Cookies.get('idToken');
-        request('DELETE', '/folder?id_folder=' + deleteId.split('#')[1], 'application/json', token, null
+        request('DELETE', '/folder?id_folder=' + deleteId.split('#')[1], 'application/json'
         ).then(() => {
             alert("Folder eliminado correctamente");
             update_folders();
@@ -258,8 +254,7 @@ export default function AdminBiblioteca() {
             alert("No se ha seleccionado ningun documento");
             return;
         }
-        const token = Cookies.get('idToken');
-        request('DELETE', '/file?id_file=' + deleteId.split('#')[1], 'application/json', token, null
+        request('DELETE', '/file?id_file=' + deleteId.split('#')[1], 'application/json'
         ).then(() => {
             alert("Documento eliminado correctamente");
             update_folders();
