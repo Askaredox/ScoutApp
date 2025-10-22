@@ -1,8 +1,7 @@
 'use client';
 
-import { AccessToken } from '@/utils/auth';
 import { request } from '@/utils/request-utils';
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Loader from "../_components/Loader";
 
@@ -10,17 +9,6 @@ function File() {
     const [url, setUrl] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const id_file = searchParams.get('id_file');
-    const { replace } = useRouter();
-
-    useEffect(() => {
-        if (!AccessToken.is_authenticated()) {
-            const originalUrl = window.location.href;
-            const encodedState = encodeURIComponent(originalUrl);
-            replace("/login?state=" + encodedState);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
 
     useEffect(() => {
         request('GET', `/file?id_file=${id_file}`, 'application/json')

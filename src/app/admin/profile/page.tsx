@@ -40,7 +40,7 @@ export default function AdminProfile() {
     }
 
     function update_user() {
-        request('GET', '/user_info', "application/json")
+        request('GET', '/user/me', "application/json")
             .then((scout) => {
                 setNormaluser({ id_user: scout.sub, email: scout.email, email_verified: scout.email_verified, name: scout.name, groups: scout.groups });
             })

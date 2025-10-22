@@ -19,7 +19,7 @@ export class AccessToken {
 }
 
 export const getGroup = async () => {
-    return await request('GET', '/user_info', "application/json");
+    return await request('GET', '/user/me', "application/json");
 }
 
 export const refreshAuthToken = async () => {
