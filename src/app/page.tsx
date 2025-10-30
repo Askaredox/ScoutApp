@@ -1,6 +1,6 @@
 'use client';
 
-import { AccessToken, getGroup } from '@/utils/auth';
+import { AccessToken, getMe } from '@/utils/auth';
 import { Event, Event_response } from "@/utils/interfaces";
 import { request } from '@/utils/request-utils';
 import Cookies from "js-cookie";
@@ -26,7 +26,7 @@ export default function User() {
   }, []);
 
   async function get_group() {
-    const user = await getGroup();
+    const user = await getMe();
     if (user.groups == 'Admin') {
       replace("/admin");
     }

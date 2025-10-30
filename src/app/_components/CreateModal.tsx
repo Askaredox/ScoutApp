@@ -19,8 +19,9 @@ const CreateModal: React.FC<CreateModalProps> = ({ title, toggleModal, onClose, 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
-    await onSubmit(e);
-    setLoading(true);
+    onSubmit(e).then(() =>
+      handleClose()
+    );
   }
 
   return (

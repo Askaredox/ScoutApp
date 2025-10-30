@@ -1,6 +1,7 @@
 'use client';
 
 import '@ungap/with-resolvers';
+import axios from 'axios';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs'; /* webpackIgnore: true */
 
 
@@ -24,15 +25,16 @@ export async function initializeDOMMatrix() {
 
 
 export const upload_presigned_url = async (file: File, path: string) => {
-    const upload_response = await fetch(path, {
+    const upload_response = await axios(path, {
         method: "PUT",
         headers: {
             'Content-Type': file.type,
         },
-        body: file,
+
+        data: file,
     });
-    if (!upload_response.ok) {
-        const errorText = await upload_response.text();
+    if (!upload_response.status.toString().startsWith('2')) {
+        const errorText = await upload_response.data();
         throw new Error(`HTTP Error: ${upload_response.status} - ${errorText}`);
     }
 }

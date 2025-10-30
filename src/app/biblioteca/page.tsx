@@ -2,7 +2,7 @@
 
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
-import { AccessToken, getGroup } from '@/utils/auth';
+import { AccessToken, getMe } from '@/utils/auth';
 import { File_data, Folder_data } from "@/utils/interfaces";
 import { request } from '@/utils/request-utils';
 import Image from "next/image";
@@ -76,7 +76,7 @@ export default function UserBiblioteca() {
     }, [url]);
 
     async function get_group() {
-        const user = await getGroup();
+        const user = await getMe();
         if (user.groups == 'Admin') {
             replace("/admin/biblioteca");
         }

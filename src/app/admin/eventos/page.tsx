@@ -4,7 +4,7 @@ import Header from '@/app/_components/Header';
 import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
-import { AccessToken, getGroup } from '@/utils/auth';
+import { AccessToken, getMe } from '@/utils/auth';
 import { Event, Event_response, Metadata } from '@/utils/interfaces';
 import { request } from '@/utils/request-utils';
 import { formatDateToYYYYMMDD, upload_presigned_url } from '@/utils/utils';
@@ -68,7 +68,7 @@ export default function AdminEvent() {
   }, []);
 
   async function get_group() {
-    const user = await getGroup();
+    const user = await getMe();
     if (user.groups == 'Admin') {
       update_event();
     }
