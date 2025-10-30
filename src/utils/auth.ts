@@ -18,15 +18,15 @@ export class AccessToken {
     }
 }
 
-export const getGroup = async () => {
+export const getMe = async () => {
     return await request('GET', '/user/me', "application/json");
 }
 
 export const refreshAuthToken = async () => {
     try {
-        const response = await request('POST', '/refresh_token', 'application/json', null, false);
-        if (response && response.access_token) {
-            AccessToken.setToken(response.access_token);
+        const response = await request('POST', '/refresh', 'application/json', null, false);
+        if (response && response.accessToken) {
+            AccessToken.setToken(response.accessToken);
             return true;
         } else {
             console.error("No access token in refresh response");

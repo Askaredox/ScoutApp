@@ -4,7 +4,7 @@ import AddButton from '@/app/_components/AddButton';
 import CreateModal from '@/app/_components/CreateModal';
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
-import { AccessToken, getGroup } from '@/utils/auth';
+import { AccessToken, getMe } from '@/utils/auth';
 import { File_data, Folder_data } from "@/utils/interfaces";
 import { request } from '@/utils/request-utils';
 import { create_thumbnail, upload_presigned_url } from '@/utils/utils';
@@ -99,7 +99,7 @@ export default function AdminBiblioteca() {
     }, [url]);
 
     async function get_group() {
-        const user = await getGroup();
+        const user = await getMe();
         if (user.groups == 'Admin') {
             update_folders();
         }

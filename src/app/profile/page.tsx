@@ -1,7 +1,6 @@
 'use client';
 
-import { AccessToken, getGroup } from '@/utils/auth';
-import { request } from '@/utils/request-utils';
+import { AccessToken, getMe } from '@/utils/auth';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -11,13 +10,14 @@ interface User_data {
     email_verified: string;
     name: string;
     groups: number;
+    avatar: string;
 }
 
 
 export default function UserProfile() {
     const { back, replace } = useRouter();
     const [normaluser, setNormaluser] = useState<User_data>();
-
+    const [avatar, setAvatar] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if (!AccessToken.is_authenticated()) {
@@ -29,21 +29,25 @@ export default function UserProfile() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    async function get_group() {
-        const user = await getGroup();
-        if (user.groups == 'Admin') {
-            replace("/admin/profile");
+    function get_avatar(avatar: string, user_sub: string) {
+        if (avatar == null || avatar == "NONE") {
+            console.log('Generating avatar for user_sub:', user_sub.replace(/\D/g, "").slice(0, 8));
+            return 'https://avatars.githubusercontent.com/u/' + user_sub.replace(/\D/g, "").slice(0, 8);
         }
         else {
-            update_user();
+            return avatar;
         }
     }
 
-    function update_user() {
-        request('GET', '/user/me', "application/json")
-            .then((scout) => {
-                setNormaluser({ id_user: scout.sub, email: scout.email, email_verified: scout.email_verified, name: scout.name, groups: scout.groups });
-            })
+    async function get_group() {
+        const user = await getMe();
+        if (user.groups == 'Admin') {
+            setNormaluser({ id_user: user.sub, email: user.email, email_verified: user.email_verified, name: user.name, groups: user.groups, avatar: user.avatar });
+            setAvatar(get_avatar(user.avatar, user.sub));
+        }
+        else {
+            replace("/admin/profile");
+        }
     }
 
     return (
@@ -67,6 +71,14 @@ export default function UserProfile() {
                             <h4 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Información Personal</h4>
                             <hr className="my-4 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent  dark:via-neutral-400" />
 
+                            <div className="flex justify-center mb-4">
+                                {
+                                    avatar == undefined ? (
+                                        <div className="w-32 h-32 rounded-full shadow-lg bg-gray-300 animate-pulse"></div>
+                                    ) : <img className="w-32 h-32 rounded-full shadow-lg" src={avatar} alt="Avatar" />
+                                }
+
+                            </div>
 
                             <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Id scout</h6>
                             <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{normaluser?.id_user}</p>

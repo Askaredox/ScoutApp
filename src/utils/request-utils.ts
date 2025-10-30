@@ -1,5 +1,5 @@
 import { AccessToken, refreshAuthToken } from "@/utils/auth";
-
+import axios, { AxiosResponse } from "axios";
 
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -14,26 +14,24 @@ export const request = async (
     try {
         const response = await request_data(method, path, content_type, body, auth);
 
-        if (response.status === 401) {
-            if (await refreshAuthToken()) {
-                return await request_data(method, path, content_type, body, auth);
-            }
-            else {
-                throw new Error("Unauthorized");
-            }
-        }
         // Check if response is ok
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP Error: ${response.status} - ${errorText}`);
+        if (response.status < 200 || response.status >= 300) {
+            const errorText = await response.data;
+            throw new Error(`HTTP Error: ${response?.status} - ${errorText}`);
         }
 
         // Try to parse response as JSON
-        return await response.json().catch(() => null); // Handle empty response cases
+        return await response.data; // Handle empty response cases
 
     } catch (e) {
-        console.error("Request failed:", e);
-        return { error: "Request failed", details: e };
+        console.log(e)
+        if (await refreshAuthToken()) {
+            return await request_data(method, path, content_type, body, auth);
+        }
+        else {
+            console.error("Request failed:", e);
+            return { error: "Request failed", details: e };
+        }
     }
 };
 
@@ -44,6 +42,7 @@ const request_data = async (
     body: string | null = null,
     auth: boolean = true,
 ) => {
+    let response: AxiosResponse;
     const token = auth ? AccessToken.getToken() : '';
 
     const headers: { 'Content-Type': string; 'Authorization'?: string; } = {
@@ -59,12 +58,14 @@ const request_data = async (
         formattedBody = new URLSearchParams(body).toString();
     }
 
-    const response = await fetch(`${BACKEND_URL}${path}`, {
-        method: method,
+    response = await axios({
+        url: `${BACKEND_URL}${path}`,
+        method: method as any,
         headers: headers,
-        body: method !== "GET" ? formattedBody : undefined, // GET requests shouldn't have a body
-        credentials: 'include', // Include cookies in requests
+        data: method !== "GET" ? formattedBody : undefined, // GET requests shouldn't have a body
+        withCredentials: true, // Include cookies in requests
     });
+    // console.log(`Request to ${path} returned status ${response?.status}`);
 
     return response;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { AccessToken, getGroup } from "@/utils/auth";
+import { AccessToken, getMe } from "@/utils/auth";
 import { request } from "@/utils/request-utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -23,7 +23,7 @@ const Auth = () => {
                 const response = await request('POST', "/token", 'application/json', JSON.stringify({ 'code': code, 'redirect_uri': `${window.location.origin}/auth` }), false);
                 AccessToken.setToken(response.idToken);
 
-                const user = await getGroup();
+                const user = await getMe();
 
                 if (state)
                     push(decodeURIComponent(state));
