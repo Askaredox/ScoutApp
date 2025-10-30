@@ -1,5 +1,5 @@
 import { AccessToken, refreshAuthToken } from "@/utils/auth";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -42,7 +42,6 @@ const request_data = async (
     body: string | null = null,
     auth: boolean = true,
 ) => {
-    let response: AxiosResponse;
     const token = auth ? AccessToken.getToken() : '';
 
     const headers: { 'Content-Type': string; 'Authorization'?: string; } = {
@@ -58,9 +57,9 @@ const request_data = async (
         formattedBody = new URLSearchParams(body).toString();
     }
 
-    response = await axios({
+    const response = await axios({
         url: `${BACKEND_URL}${path}`,
-        method: method as any,
+        method: method,
         headers: headers,
         data: method !== "GET" ? formattedBody : undefined, // GET requests shouldn't have a body
         withCredentials: true, // Include cookies in requests
