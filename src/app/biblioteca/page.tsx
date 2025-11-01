@@ -2,12 +2,11 @@
 
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
-import { AccessToken, getMe } from '@/utils/auth';
 import { File_data, Folder_data } from "@/utils/interfaces";
 import { request } from '@/utils/request-utils';
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import NavBar from '../_components/NavBar';
 
 
 function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.Dispatch<React.SetStateAction<{ path: string, id: string }[]>>) {
@@ -61,29 +60,6 @@ export default function UserBiblioteca() {
     const [folders, setFolders] = useState<Folder_data[]>([]);
     const [files, setFiles] = useState<File_data[]>([]);
     const [ready, setReady] = useState(false);
-    const { replace } = useRouter();
-
-
-    useEffect(() => {
-        if (!AccessToken.is_authenticated()) {
-
-            replace("/login");
-        }
-        else {
-            get_group();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [url]);
-
-    async function get_group() {
-        const user = await getMe();
-        if (user.groups == 'Admin') {
-            replace("/admin/biblioteca");
-        }
-        else {
-            update_folders();
-        }
-    }
 
     function update_folders() {
         setReady(false);
@@ -112,15 +88,17 @@ export default function UserBiblioteca() {
     }
 
     return (
-        <div className="size-full">
-            <div className="min-h-screen size-full dark:bg-gray-900 bg-gray-50 flex  justify-center">
-                <section className="size-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased ">
-                    <div className="px-2 lg:px-12 ">
+        <main>
+            <NavBar callback={update_folders} />
+            <div className="sm:ml-56 mt-16 sm:mt-14">
+                <div className="min-h-screen size-full dark:bg-gray-900 bg-gray-50 flex  justify-center">
+                    <section className="size-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased ">
+                        <div className="px-2 lg:px-12 ">
 
-                        <Header title="Biblioteca Scout" />
-                        <div className="flex flex-col md:flex-row md:justify-end justify-between gap-4 mb-4">
+                            <Header title="Biblioteca Scout" />
+                            <div className="flex flex-col md:flex-row md:justify-end justify-between gap-4 mb-4">
 
-                            {/* Buscador 
+                                {/* Buscador 
                             <SearchBar
                                 handleSubmit={handleSubmit}
                                 searchTerm={searchTerm}
@@ -129,20 +107,20 @@ export default function UserBiblioteca() {
                             />
                             */}
 
-                        </div>
+                            </div>
 
-                        <TableCrumbs
-                            ready={ready}
-                            getCrumbs={() => get_breadcrumb(url, setUrl)}
-                            headerRows={
-                                <tr>
-                                    <th scope="col" className="w-1/6 px-2 py-2" align="center">
-                                        Tipo
-                                    </th>
-                                    <th scope="col" className="w-2/3 px-2 py-2">
-                                        Nombre
-                                    </th>
-                                    {/**
+                            <TableCrumbs
+                                ready={ready}
+                                getCrumbs={() => get_breadcrumb(url, setUrl)}
+                                headerRows={
+                                    <tr>
+                                        <th scope="col" className="w-1/6 px-2 py-2" align="center">
+                                            Tipo
+                                        </th>
+                                        <th scope="col" className="w-2/3 px-2 py-2">
+                                            Nombre
+                                        </th>
+                                        {/**
                                                 <th scope="col" className="px-2 py-2">
                                                     <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -158,57 +136,58 @@ export default function UserBiblioteca() {
                                                     </svg>
                                                 </th>
                                                  */}
-                                    <th scope="col" className="w-2/3 px-2 py-2">
-                                        Fecha
-                                    </th>
-                                </tr>
-                            }
-                            dataRowsFolders={
-                                folders.map((folder, i) => (
-                                    <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}>
-                                        <td className="px-2 py-2" align="center">
-                                            <svg className="h-5 w-5 text-gray-400 " width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" />
-                                                <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                                            </svg>
-
-                                        </td>
-                                        <td scope="row" className="w-2/3 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-
-                                            {folder.name}
-                                        </td>
+                                        <th scope="col" className="w-2/3 px-2 py-2">
+                                            Fecha
+                                        </th>
                                     </tr>
-                                ))
-                            }
-                            dataRowsFiles=
-                            {
-                                files.map((file, i) => (
-                                    <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={async () => await view_file(file)}>
-                                        <td className="px-2 py-2" align="center">
-                                            <div className="relative w-[60px] h-auto">
-                                                <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
-                                            </div>
-                                        </td>
-                                        <td scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                }
+                                dataRowsFolders={
+                                    folders.map((folder, i) => (
+                                        <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}>
+                                            <td className="px-2 py-2" align="center">
+                                                <svg className="h-5 w-5 text-gray-400 " width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" />
+                                                    <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                                                </svg>
 
-                                            {file.name}
-                                        </td>
-                                        <td className="px-2 py-2 text-center">
-                                            {new Date(file.created * 1000).toLocaleDateString()}
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        />
+                                            </td>
+                                            <td scope="row" className="w-2/3 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+
+                                                {folder.name}
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                                dataRowsFiles=
+                                {
+                                    files.map((file, i) => (
+                                        <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={async () => await view_file(file)}>
+                                            <td className="px-2 py-2" align="center">
+                                                <div className="relative w-[60px] h-auto">
+                                                    <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
+                                                </div>
+                                            </td>
+                                            <td scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+
+                                                {file.name}
+                                            </td>
+                                            <td className="px-2 py-2 text-center">
+                                                {new Date(file.created * 1000).toLocaleDateString()}
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                            />
 
 
-                    </div>
-                </section>
+                        </div>
+                    </section>
+
+                </div>
+
 
             </div>
-
-
-        </div>
+        </main>
     );
 }
 /**

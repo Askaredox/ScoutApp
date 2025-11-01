@@ -1,6 +1,7 @@
 
 import { request } from '@/utils/request-utils';
 import Cookies from 'js-cookie';
+import { User } from './interfaces';
 
 export class AccessToken {
     public static setToken(token: string) {
@@ -15,6 +16,35 @@ export class AccessToken {
     }
     public static is_authenticated(): boolean {
         return !!Cookies.get('access_token');
+    }
+    public static get_group(): string | null {
+        const token = Cookies.get('access_token');
+        if (!token) {
+            return null;
+        }
+        return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())['cognito:groups'][0];
+    }
+    public static get_data(): any | null {
+        const token = Cookies.get('access_token');
+        if (!token) {
+            return null;
+        }
+        return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    }
+    public static get_user(): User {
+        const token = Cookies.get('access_token');
+        if (!token) {
+            throw new Error("Access token not found in cookies");
+        }
+        const data = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        return {
+            sub: data['sub'],
+            email: data['email'],
+            email_verified: data['email_verified'],
+            name: data['name'],
+            groups: data['cognito:groups'] ? data['cognito:groups'][0] : '',
+            avatar: data['custom:avatar'] ? data['custom:avatar'] : 'NONE'
+        };
     }
 }
 

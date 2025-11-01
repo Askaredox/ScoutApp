@@ -69,3 +69,12 @@ export interface Metadata {
     },
     data: Array<Event>
 }
+
+export interface User {
+    avatar: string;
+    email: string;
+    email_verified: string;
+    groups: string;
+    name: string;
+    sub: string;
+}
