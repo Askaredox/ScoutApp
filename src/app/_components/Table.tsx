@@ -28,8 +28,6 @@ const DataTable: React.FC<TableProps> = ({ ready, headerRows, dataRows }) => {
                     </tbody>
                 </table>
             </div>
-
-
         );
     }
 

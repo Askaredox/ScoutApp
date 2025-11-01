@@ -16,7 +16,7 @@ import NavBar from '../_components/NavBar';
 
 
 export default function AdminEvent() {
-  const [event_data, setEvent_data] = useState<Metadata | null>(null);
+  const [event_data, setEvent_data] = useState<Metadata<Event> | null>(null);
   const [filteredEvents, setFilteredEvents] = useState(event_data?.data || []);
   const [newEventModal, setNewEventModal] = useState<boolean>(false);
   const [eventsubject, setEventsubject] = useState<string>('');
@@ -61,7 +61,7 @@ export default function AdminEvent() {
     request('GET', url, "application/json")
       .then((event_data_res) => {
         const events: Event[] = [];
-        const event_meta: Metadata = {
+        const event_meta: Metadata<Event> = {
           metadata: event_data_res.metadata,
           data: []
         };
@@ -89,7 +89,7 @@ export default function AdminEvent() {
     request('GET', '/event_meta?page=' + page + '&per_page=' + per_page, "application/json")
       .then((event_data_res) => {
         const events: Event[] = [];
-        const event_meta: Metadata = {
+        const event_meta: Metadata<Event> = {
           metadata: event_data_res.metadata,
           data: []
         };
