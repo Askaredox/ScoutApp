@@ -7,6 +7,9 @@ export class AccessToken {
     public static setToken(token: string) {
         Cookies.set('access_token', token, { sameSite: 'Lax' });
     }
+    public static setAvatar(avatar: string) {
+        Cookies.set('avatar', avatar, { sameSite: 'Lax' });
+    }
     public static getToken(): string {
         const token = Cookies.get('access_token');
         if (!token) {
@@ -43,7 +46,7 @@ export class AccessToken {
             email_verified: data['email_verified'],
             name: data['name'],
             groups: data['cognito:groups'] ? data['cognito:groups'][0] : '',
-            avatar: data['custom:avatar'] ? data['custom:avatar'] : 'NONE'
+            avatar: Cookies.get('avatar') || 'NONE',
         };
     }
 }

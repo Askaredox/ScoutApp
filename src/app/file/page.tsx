@@ -42,8 +42,9 @@ function File() {
 }
 
 export default function FileViewer() {
-    return (<Suspense fallback={<Loader />}>
-        <File />
-    </Suspense>
+    return (
+        <Suspense fallback={<Loader />}>
+            <File />
+        </Suspense>
     );
 }

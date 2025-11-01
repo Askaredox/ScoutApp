@@ -3,6 +3,8 @@
 import NavBar from '@/app/_components/NavBar';
 import { getMe } from '@/utils/auth';
 import { User } from '@/utils/interfaces';
+import { request } from '@/utils/request-utils';
+import { upload_presigned_url } from '@/utils/utils';
 import { useRef, useState } from "react";
 import CreateModal from '../_components/CreateModal';
 
@@ -16,6 +18,21 @@ export default function UserProfile() {
   async function changeAvatar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(avatarFile);
+    if (avatarFile == null) {
+      alert("No se ha seleccionado ningun archivo");
+      return;
+    }
+    const data = {
+      name: avatarFile.name,
+      file_data: avatarFile
+    }
+
+    request('POST', '/user/me/avatar', 'application/json', JSON.stringify(data))
+      .then(async (avatar_data) => {
+        console.log(avatar_data);
+        await upload_presigned_url(avatarFile, avatar_data.avatar_data.url);
+        alert("Archivo subido correctamente");
+      }).catch((err) => console.log(err));
   }
 
 
