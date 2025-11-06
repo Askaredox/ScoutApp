@@ -39,7 +39,7 @@ export default function Admin() {
       {/* Botón hamburguesa visible solo en móviles */}
       <NavBar callback={update_events} />
 
-      <div className="p-6 pt-20 sm:ml-56 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="p-6 pt-20 md:ml-56 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {!ready && (
           <div role="status" className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">
@@ -53,12 +53,12 @@ export default function Admin() {
             className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-shadow hover:shadow-lg"
           >
             <a href={Event.information} target="_blank" rel="noopener noreferrer">
-              <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-2xl">
+              <div className="relative w-full aspect-4/3 overflow-hidden rounded-t-2xl">
                 <Image
                   src={Event.post}
                   alt={Event.title}
                   fill
-                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  className="object-contain transition-transform duration-300 hover:scale-105"
                 />
               </div>
             </a>

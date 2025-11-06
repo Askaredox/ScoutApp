@@ -28,7 +28,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
 
 
   function get_avatar(user: User) {
-    if (user.avatar == null || user.avatar == "NONE") {
+    if (user.avatar === null || user.avatar === "NONE") {
       return 'https://avatars.githubusercontent.com/u/' + user.sub.replace(/\D/g, "").slice(0, 8);
     }
     else {
@@ -53,7 +53,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start rtl:justify-end">
-              <button data-drawer-target="logo-sidebar" onClick={() => setSidenav(!sidenav)} data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+              <button data-drawer-target="logo-sidebar" onClick={() => setSidenav(!sidenav)} data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                 <span className="sr-only">Open sidebar</span>
                 <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M5 7h14M5 12h14M5 17h10" />
@@ -70,7 +70,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
                 <button type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 cursor-pointer" onClick={open_user} aria-haspopup="true">
                   <span className="sr-only">Open user menu</span>
                   {user && (
-                    <img className="w-8 h-8 rounded-full shadow-lg" src={get_avatar(user)} alt="Avatar" />
+                    <img className="w-8 h-8 rounded-full shadow-lg object-cover" src={get_avatar(user)} alt="Avatar" />
                   )}
                   {!user && (
                     <div role="status" className="space-y-2.5 animate-pulse max-w-lg">
@@ -97,7 +97,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
                         )}
                         {user && (
                           <div className="px-4 py-3" role="none">
-                            <p className="text-sm text-gray-900 dark:text-white" role="none">
+                            <p className="text-lg text-gray-900 dark:text-white" role="none">
                               {user.name}
                             </p>
                             <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
@@ -136,7 +136,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
           </div>
         </div>
       </nav>
-      <aside id="logo-sidebar" className={`fixed top-0 left-0 z-40 w-56 h-screen pt-16 transition-transform ${sidenav ? "translate-x-0" : "-translate-x-full"} bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700`} aria-label="Sidebar">
+      <aside id="logo-sidebar" className={`fixed top-0 left-0 z-40 w-56 h-screen pt-16 transition-transform ${sidenav ? "translate-x-0" : "-translate-x-full"} bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700`} aria-label="Sidebar">
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="font-medium">
             <li>

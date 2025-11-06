@@ -77,4 +77,5 @@ export interface User {
     groups: string;
     name: string;
     sub: string;
+    section: string;
 }

@@ -38,10 +38,48 @@ export default function AdminScout() {
         setFilteredUser(filtered);
     };
 
+    function update_event_url(url: string) {
+        request('GET', url, "application/json")
+            .then((user_data_res) => {
+                setUser_data(user_data_res);
+                setFilteredUser(user_data_res.data);
+                setReady(true);
+            })
+    }
+
+    function group_icon(group: string) {
+        switch (group) {
+            case 'admin':
+                return (
+                    <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.35709 16V5.78571c0-.43393.34822-.78571.77777-.78571H18.5793c.4296 0 .7778.35178.7778.78571V16M5.35709 16h-1c-.55229 0-1 .4477-1 1v1c0 .5523.44771 1 1 1H20.3571c.5523 0 1-.4477 1-1v-1c0-.5523-.4477-1-1-1h-1M5.35709 16H19.3571M9.35709 8l2.62501 2.5L9.35709 13m4.00001 0h2" />
+                    </svg>
+
+                );
+
+            case 'Scouter':
+                return (
+                    <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.7141 15h4.268c.4043 0 .732-.3838.732-.8571V3.85714c0-.47338-.3277-.85714-.732-.85714H6.71411c-.55228 0-1 .44772-1 1v4m10.99999 7v-3h3v3h-3Zm-3 6H6.71411c-.55228 0-1-.4477-1-1 0-1.6569 1.34315-3 3-3h2.99999c1.6569 0 3 1.3431 3 3 0 .5523-.4477 1-1 1Zm-1-9.5c0 1.3807-1.1193 2.5-2.5 2.5s-2.49999-1.1193-2.49999-2.5S8.8334 9 10.2141 9s2.5 1.1193 2.5 2.5Z" />
+                    </svg>
+
+
+                );
+            default:
+                return (
+                    <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.83892 12.4543s1.24988-3.08822-.21626-5.29004C8.15656 4.96245 4.58671 4.10885 4.39794 4.2436c-.18877.13476-1.11807 3.32546.34803 5.52727 1.4661 2.20183 5.09295 2.68343 5.09295 2.68343Zm0 0C10.3389 13.4543 12 15 12 18v2c0-2-.4304-3.4188 2.0696-5.9188m0 0s-.4894-2.7888 1.1206-4.35788c1.6101-1.56907 4.4903-1.54682 4.6701-1.28428.1798.26254.4317 2.84376-1.0809 4.31786-1.61 1.5691-4.7098 1.3243-4.7098 1.3243Z" />
+                    </svg>
+
+                );
+        }
+    }
+
+
     return (
         <main>
             <NavBar callback={update_users} />
-            <div className="sm:ml-56 mt-16 sm:mt-14">
+            <div className="md:ml-56 mt-16 md:mt-14">
                 <section className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
                     <div className="max-w-7xl mx-auto">
                         <Header title="Administrador de Usuarios" />
@@ -62,23 +100,24 @@ export default function AdminScout() {
                             ready={ready}
                             headerRows={
                                 <tr>
-                                    <th className="px-4 py-3 text-left">Avatar</th>
+                                    <th className="px-4 py-3 w-8 text-left">Avatar</th>
                                     <th className="px-4 py-3 text-left">Email</th>
                                     <th className="px-4 py-3 text-left">Nombre</th>
-                                    <th className="px-4 py-3 text-left">Verificado</th>
+                                    <th className="px-4 py-3 text-left">Sección</th>
                                     <th className="px-4 py-3 text-left">Tipo</th>
                                 </tr>
                             }
+
                             dataRows={
                                 filteredUser.map((a, i) => (
                                     <tr key={i} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td className="px-4 py-3">
-                                            <Image src={a.avatar} width={60} height={0} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
+                                        <td className="px-1 py-3 flex justify-center">
+                                            <Image src={a.avatar} width={60} height={60} alt={a.email + '_avatar'} className="w-8 h-8 rounded-full shadow-lg object-cover" />
                                         </td>
                                         <td className="px-4 py-3 font-medium">{a.email}</td>
                                         <td className="px-4 py-3 font-medium">{a.name}</td>
-                                        <td className="px-4 py-3 font-medium">{a.email_verified}</td>
-                                        <td className="px-4 py-3 font-medium">{a.groups}</td>
+                                        <td className="px-4 py-3 font-medium">{a.section}</td>
+                                        <td className="px-4 py-3 font-medium flex flex-row">{group_icon(a.groups)} {a.groups}</td>
                                         {/* 
                                         <td className="px-4 py-3 text-right">
                                             <div className="relative inline-block text-left">
@@ -129,7 +168,7 @@ export default function AdminScout() {
                             }
                         />
 
-                        <Pagination paginatedData={user_data} update_event_url={() => console.log('actualizaaaaaa')} />
+                        <Pagination paginatedData={user_data} update_event_url={update_event_url} />
                     </div>
                 </section>
 

@@ -2,7 +2,7 @@ import { Metadata } from '@/utils/interfaces';
 import React from 'react';
 
 type PaginationProps = {
-    paginatedData: Metadata | null;
+    paginatedData: Metadata<any> | null;
     update_event_url: (url: string) => void;
 };
 

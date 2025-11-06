@@ -8,9 +8,10 @@ import { File_data, Folder_data } from "@/utils/interfaces";
 import { request } from '@/utils/request-utils';
 import { create_thumbnail, upload_presigned_url } from '@/utils/utils';
 
-import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import FileCard from '../_components/FileCard';
+import FolderCard from '../_components/FolderCard';
 import NavBar from '../_components/NavBar';
 
 
@@ -80,6 +81,10 @@ export default function AdminBiblioteca() {
   const [deleteFolderModal, setDeleteFolderModal] = useState<boolean>(false);
   const [ready, setReady] = useState(false);
   const { replace, push } = useRouter();
+
+  useEffect(() => {
+    update_folders();
+  }, [url]);
 
   const resetFileDRef = () => {
     if (newFileDRef.current) {
@@ -179,24 +184,6 @@ export default function AdminBiblioteca() {
     }
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files === null) {
-      alert("No se ha seleccionado ningun archivo");
-      return;
-    }
-    if (e.target.files[0].size > 25 * 1000 * 1000) {
-      alert("El archivo es demasiado grande");
-      return;
-    }
-    if (e.target.files[0].type != "application/pdf" && e.target.files[0].type != "image/jpeg" && e.target.files[0].type != "image/png" && e.target.files[0].type != "video/mp4") {
-      console.log(e.target.files[0].type);
-      alert("El archivo debe ser un pdf, jpg, jpeg, png o mp4");
-      return;
-    }
-    setNewFileName(e.target.files[0].name);
-    setNewFileD(e.target.files[0]);
-  }
-
   async function view_file(file_data: File_data) {
     push('/file?id_file=' + file_data.id.split('#')[1]);
     //const data = await request('GET', '/file?id_file=' + file_data.id.split('#')[1], 'application/json', Cookies.get('idToken'), null);
@@ -242,11 +229,34 @@ export default function AdminBiblioteca() {
     })
   }
 
+  function onFileDrag(event: React.DragEvent<HTMLInputElement>) {
+    event.preventDefault();
+  }
+  function onFileDrop(event: React.DragEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
+    event.preventDefault();
+    let files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
+    if (files === null) {
+      alert("No se ha seleccionado ningun archivo");
+      return;
+    }
+    if (files[0].size > 25 * 1000 * 1000) {
+      alert("El archivo es demasiado grande");
+      return;
+    }
+    if (files[0].type != "application/pdf" && files[0].type != "image/jpeg" && files[0].type != "image/png" && files[0].type != "video/mp4") {
+      console.log(files[0].type);
+      alert("El archivo debe ser un pdf, jpg, jpeg, png o mp4");
+      return;
+    }
+    setNewFileName(files[0].name);
+    setNewFileD(files[0]);
+  }
+
   return (
 
     <main>
       <NavBar callback={update_folders} />
-      <div className="sm:ml-56 mt-16 sm:mt-14">
+      <div className="md:ml-56 mt-16 md:mt-14">
         <div className="min-h-screen size-full dark:bg-gray-900 bg-gray-50 flex  justify-center">
           <section className="size-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased ">
             <div className="px-2">
@@ -367,7 +377,7 @@ export default function AdminBiblioteca() {
                     <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-700">
                       <td className="px-2 py-2 cursor-pointer" align="center" onClick={async () => await view_file(file)}>
                         <div className="relative w-[60px] h-auto">
-                          <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
+                          <img className="h-24 w-full object-contain" src={file.thumbnail} alt="" />
                         </div>
                       </td>
                       <td scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white cursor-pointer" onClick={async () => await view_file(file)}>
@@ -409,6 +419,25 @@ export default function AdminBiblioteca() {
                     </tr>
                   ))
                 }
+                cardFolders={
+                  folders.map((folder, i) => (
+                    <FolderCard
+                      key={i}
+                      title={folder.name}
+                      onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}
+                      onDelete={() => console.log('delete')}
+                    />
+                  ))
+                }
+                cardFiles={files.map((file, i) => (
+                  <FileCard
+                    key={i}
+                    title={file.name}
+                    image={file.thumbnail}
+                    onClick={async () => await view_file(file)}
+                    onDelete={() => console.log('delete')}
+                  />
+                ))}
               />
 
 
@@ -453,10 +482,29 @@ export default function AdminBiblioteca() {
           onSubmit={newFile}
         >
           <div>
-            <div className="w-full mb-4">
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Subir archivo</label>
-              <input type="file" onChange={handleFileChange} ref={newFileDRef} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input"></input>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">.pdf .jpg .jpeg .png .mp4 (MAX. 25MB).</p>
+
+            <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={onFileDrop}>
+              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                {newFileD === null ? (
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">.pdf .jpg .jpeg .png .mp4 (MAX. 25MB).</p>
+                  </div>
+
+                ) : (
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{newFileD.name}</span></p>
+                  </div>
+                )}
+
+                <input id="dropzone-file" type="file" className="hidden" ref={newFileDRef} onChange={onFileDrop} />
+              </label>
             </div>
             <div className="my-4">
               <label className="inline-flex items-center cursor-pointer">

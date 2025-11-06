@@ -121,13 +121,27 @@ export default function AdminEvent() {
     setUpdateEventexpire(expire);
   }
 
+  function closeUpdateEventModal() {
+    setUpdateEventModal(false);
+    setUpdateEventportrait(null);
+    setUpdateEventinformation(null);
+    setUpdateEventsubject('');
+    setUpdateEventshort_description('');
+    setUpdateEventexpire('');
+    resetEventPortraitRef();
+    resetEventInformationRef();
+  }
+
   function openDeleteEventModal(id: string) {
     setDeleteEventModal(true);
     setDeleteEventId(id);
   }
 
   function closeCreateEventModal() {
+    console.log("Closing");
     setNewEventModal(false);
+    setEventportrait(null);
+    setEventinformation(null);
     setEventsubject('');
     setEventshort_description('');
     setEventexpire('');
@@ -197,38 +211,6 @@ export default function AdminEvent() {
       })
   }
 
-
-  function handleUpdateFileChange(e: React.ChangeEvent<HTMLInputElement>, type: string) {
-    if (e.target.files === null) {
-      alert("No se ha seleccionado ningun archivo");
-      return;
-    }
-    if (e.target.files[0]?.size > 20000000) {
-      alert("El archivo es demasiado grande");
-      return;
-    }
-    if (type == 'portrait')
-      setUpdateEventportrait(e.target.files[0]);
-    else if (type == 'information')
-      setUpdateEventinformation(e.target.files[0]);
-  }
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, type: string) {
-    if (e.target.files === null) {
-      alert("No se ha seleccionado ningun archivo");
-      return;
-    }
-    if (e.target.files[0]?.size > 20000000) {
-      alert("El archivo es demasiado grande");
-      return;
-    }
-    if (type == 'portrait')
-      setEventportrait(e.target.files[0]);
-    else if (type == 'information')
-      setEventinformation(e.target.files[0]);
-  }
-
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -238,10 +220,49 @@ export default function AdminEvent() {
     setFilteredEvents(filtered);
   };
 
+  function onFileDrag(event: React.DragEvent<HTMLInputElement>) {
+    event.preventDefault();
+  }
+  function onFileDrop(event: React.DragEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>, type: string, edit: boolean = false) {
+    event.preventDefault();
+    let files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
+    if (files === null || files.length === 0) {
+      return;
+    }
+    if (files[0].size > 25 * 1000 * 1000) {
+      alert("El archivo es demasiado grande");
+      return;
+    }
+    if (type == 'portrait') {
+      if (files[0].type != "image/jpeg" && files[0].type != "image/png" && files[0].type != "video/mp4") {
+        console.log(files[0].type);
+        alert("El archivo debe ser un pdf, jpg, jpeg, png o mp4");
+        return;
+      }
+      if (edit)
+        setUpdateEventportrait(files[0]);
+      else
+        setEventportrait(files[0]);
+
+    }
+    else if (type == 'information') {
+      if (files[0].type != "application/pdf") {
+        console.log(files[0].type);
+        alert("El archivo debe ser un pdf, jpg, jpeg, png o mp4");
+        return;
+      }
+      if (edit)
+        setUpdateEventinformation(files[0]);
+      else
+        setEventinformation(files[0]);
+
+    }
+  }
+
   return (
     <main>
       <NavBar callback={update_event} />
-      <div className="sm:ml-56 mt-16 sm:mt-14">
+      <div className="md:ml-56 mt-16 md:mt-14">
         <section className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
@@ -349,13 +370,56 @@ export default function AdminEvent() {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="portrait" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Imagen de portada</label>
-              <input type="file" id="portrait" name="portrait" ref={eventPortraitRef} onChange={(e) => handleFileChange(e, 'portrait')} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white cursor-pointer" required />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Imagen de portada </label>
+              <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'portrait')}>
+                <label htmlFor="dropzone-file-portrait" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                  {eventportrait === null ? (
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">.jpg .jpeg .png .mp4 (MAX. 25MB).</p>
+                    </div>
+
+                  ) : (
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{eventportrait.name}</span></p>
+                    </div>
+                  )}
+
+                  <input id="dropzone-file-portrait" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'portrait')} />
+                </label>
+              </div>
             </div>
 
             <div className="sm:col-span-2">
-              <label htmlFor="information" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ficha técnica (PDF, DOC, etc.)</label>
-              <input type="file" id="information" name="information" ref={eventInformationRef} onChange={(e) => handleFileChange(e, 'information')} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm p-2 focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white cursor-pointer" />
+              <label htmlFor="information" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ficha técnica</label>
+              <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'information')} >
+                <label htmlFor="dropzone-file-info" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                  {eventinformation === null ? (
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">.pdf (MAX. 25MB).</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{eventinformation.name}</span></p>
+                    </div>
+                  )}
+
+                  <input id="dropzone-file-info" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'information')} />
+                </label>
+              </div>
             </div>
           </div>
         </CreateModal>
@@ -365,7 +429,7 @@ export default function AdminEvent() {
             <div className="relative rounded-2xl bg-white shadow-xl dark:bg-gray-900 px-6 py-8">
               <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nuevo Evento</h3>
-                <button type="button" onClick={() => setUpdateEventModal(false)} className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition" aria-label="Cerrar">
+                <button type="button" onClick={closeUpdateEventModal} className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition" aria-label="Cerrar">
                   <svg className="w-6 h-6 text-gray-600 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -374,23 +438,7 @@ export default function AdminEvent() {
 
               {/* Form */}
               <form onSubmit={updateEvent} className="space-y-6">
-                <div className="grid gap-5 sm:grid-cols-2">
-                  {/* ID (readonly) */}
-                  <div>
-                    <label htmlFor="eventid" className="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-300">
-                      ID
-                    </label>
-                    <input
-                      readOnly
-                      type="text"
-                      value={updateEventid}
-                      name="eventid"
-                      id="eventid"
-                      className="w-full p-3 text-sm text-gray-500 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600"
-                      placeholder="ID del Evento"
-                    />
-                  </div>
-
+                <div className="grid gap-5">
                   {/* Título */}
                   <div>
                     <label
@@ -452,37 +500,57 @@ export default function AdminEvent() {
 
                   {/* Portada */}
                   <div>
-                    <label
-                      htmlFor="update_portrait"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Portada
-                    </label>
-                    <input
-                      type="file"
-                      onChange={(e) => handleUpdateFileChange(e, "portrait")}
-                      name="update_portrait"
-                      id="update_portrait"
-                      className="w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 dark:text-white dark:bg-gray-700 dark:border-gray-600"
-                      accept="image/*"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Portada </label>
+                    <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'portrait', true)}>
+                      <label htmlFor="dropzone-file-portrait" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        {updateEventportrait === null ? (
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                            </svg>
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">.jpg .jpeg .png .mp4 (MAX. 25MB).</p>
+                          </div>
+
+                        ) : (
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
+                            </svg>
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{updateEventportrait?.name}</span></p>
+                          </div>
+                        )}
+
+                        <input id="dropzone-file-portrait" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'portrait', true)} />
+                      </label>
+                    </div>
                   </div>
 
                   {/* Ficha técnica o archivo */}
                   <div>
-                    <label
-                      htmlFor="update_information"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Ficha técnica o archivo de información
-                    </label>
-                    <input
-                      type="file"
-                      onChange={(e) => handleUpdateFileChange(e, "information")}
-                      name="update_information"
-                      id="update_information"
-                      className="w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 dark:text-white dark:bg-gray-700 dark:border-gray-600"
-                    />
+                    <label htmlFor="information" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ficha técnica</label>
+                    <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'information', true)} >
+                      <label htmlFor="dropzone-file-info" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        {updateEventinformation === null ? (
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                            </svg>
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">.pdf (MAX. 25MB).</p>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
+                            </svg>
+                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{updateEventinformation?.name}</span></p>
+                          </div>
+                        )}
+
+                        <input id="dropzone-file-info" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'information', true)} />
+                      </label>
+                    </div>
                   </div>
                 </div>
 

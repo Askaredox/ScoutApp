@@ -47,6 +47,7 @@ export class AccessToken {
             name: data['name'],
             groups: data['cognito:groups'] ? data['cognito:groups'][0] : '',
             avatar: Cookies.get('avatar') || 'NONE',
+            section: data['section'] || 'NONE'
         };
     }
 }
@@ -60,6 +61,8 @@ export const refreshAuthToken = async () => {
         const response = await request('POST', '/refresh', 'application/json', null, false);
         if (response && response.accessToken) {
             AccessToken.setToken(response.accessToken);
+            const me = await getMe();
+            AccessToken.setAvatar(me.avatar);
             return true;
         } else {
             console.error("No access token in refresh response");

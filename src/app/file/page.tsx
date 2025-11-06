@@ -11,7 +11,7 @@ function File() {
     const id_file = searchParams.get('id_file');
 
     useEffect(() => {
-        request('GET', `/file?id_file=${id_file}`, 'application/json')
+        request('GET', `/file?id_file=${id_file}`, 'application/json', null, false)
             .then((data) => {
                 if (data && data.url) {
                     setUrl(data.url);
