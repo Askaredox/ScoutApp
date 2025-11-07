@@ -1,6 +1,6 @@
 'use client';
 
-import { request } from '@/utils/request-utils';
+import { request } from '@/lib/request-utils';
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Loader from "../_components/Loader";

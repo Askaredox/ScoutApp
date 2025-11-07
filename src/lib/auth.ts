@@ -1,5 +1,5 @@
 
-import { request } from '@/utils/request-utils';
+import { request } from '@/lib/request-utils';
 import Cookies from 'js-cookie';
 import { User } from './interfaces';
 

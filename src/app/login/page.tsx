@@ -1,6 +1,6 @@
 "use client";
 
-import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI, COGNITO_RESPONSE_TYPE } from '@/utils/utils';
+import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI, COGNITO_RESPONSE_TYPE } from '@/lib/utils';
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import Loader from '../_components/Loader';

@@ -1,8 +1,8 @@
 'use client';
 
 import NavBar from '@/app/_components/NavBar';
-import { Event, Event_response } from "@/utils/interfaces";
-import { request } from '@/utils/request-utils';
+import { Event, Event_response } from "@/lib/interfaces";
+import { request } from '@/lib/request-utils';
 import Image from "next/image";
 import { useState } from "react";
 

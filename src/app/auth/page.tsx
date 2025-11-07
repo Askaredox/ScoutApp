@@ -1,7 +1,7 @@
 "use client";
 
-import { AccessToken, getMe } from "@/utils/auth";
-import { request } from "@/utils/request-utils";
+import { AccessToken, getMe } from "@/lib/auth";
+import { request } from "@/lib/request-utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loader from "../_components/Loader";

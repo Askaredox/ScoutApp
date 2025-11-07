@@ -1,5 +1,5 @@
-import { AccessToken } from '@/utils/auth';
-import { User } from '@/utils/interfaces';
+import { AccessToken } from '@/lib/auth';
+import { User } from '@/lib/interfaces';
 import Cookies from "js-cookie";
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';

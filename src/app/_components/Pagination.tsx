@@ -1,4 +1,4 @@
-import { Metadata } from '@/utils/interfaces';
+import { Metadata } from '@/lib/interfaces';
 import React from 'react';
 
 type PaginationProps = {

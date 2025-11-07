@@ -1,10 +1,10 @@
 'use client';
 
 import NavBar from '@/app/_components/NavBar';
-import { getMe } from '@/utils/auth';
-import { User } from '@/utils/interfaces';
-import { request } from '@/utils/request-utils';
-import { upload_presigned_url } from '@/utils/utils';
+import { getMe } from '@/lib/auth';
+import { User } from '@/lib/interfaces';
+import { request } from '@/lib/request-utils';
+import { upload_presigned_url } from '@/lib/utils';
 import { useRef, useState } from "react";
 import CreateModal from '../_components/CreateModal';
 

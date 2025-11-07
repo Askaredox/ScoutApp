@@ -2,8 +2,8 @@
 
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
-import { File_data, Folder_data } from "@/utils/interfaces";
-import { request } from '@/utils/request-utils';
+import { File_data, Folder_data } from "@/lib/interfaces";
+import { request } from '@/lib/request-utils';
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import FileCard from '../_components/FileCard';

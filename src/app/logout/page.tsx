@@ -1,6 +1,6 @@
 "use client";
 
-import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI } from '@/utils/utils';
+import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI } from '@/lib/utils';
 import { useEffect } from "react";
 import Loader from '../_components/Loader';
 

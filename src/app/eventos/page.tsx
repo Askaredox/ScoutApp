@@ -4,9 +4,9 @@ import Header from '@/app/_components/Header';
 import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
-import { Event, Event_response, Metadata } from '@/utils/interfaces';
-import { request } from '@/utils/request-utils';
-import { formatDateToYYYYMMDD, upload_presigned_url } from '@/utils/utils';
+import { Event, Event_response, Metadata } from '@/lib/interfaces';
+import { request } from '@/lib/request-utils';
+import { formatDateToYYYYMMDD, upload_presigned_url } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 

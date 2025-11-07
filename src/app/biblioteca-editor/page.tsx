@@ -4,9 +4,9 @@ import AddButton from '@/app/_components/AddButton';
 import CreateModal from '@/app/_components/CreateModal';
 import Header from '@/app/_components/Header';
 import TableCrumbs from '@/app/_components/TableCrumbs';
-import { File_data, Folder_data } from "@/utils/interfaces";
-import { request } from '@/utils/request-utils';
-import { create_thumbnail, upload_presigned_url } from '@/utils/utils';
+import { File_data, Folder_data } from "@/lib/interfaces";
+import { request } from '@/lib/request-utils';
+import { create_thumbnail, upload_presigned_url } from '@/lib/utils';
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from "react";
@@ -80,7 +80,7 @@ export default function AdminBiblioteca() {
   const [deleteFileModal, setDeleteFileModal] = useState<boolean>(false);
   const [deleteFolderModal, setDeleteFolderModal] = useState<boolean>(false);
   const [ready, setReady] = useState(false);
-  const { replace, push } = useRouter();
+  const { push } = useRouter();
 
   useEffect(() => {
     update_folders();
