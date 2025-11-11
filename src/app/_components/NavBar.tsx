@@ -53,7 +53,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
     replace("/logout");
   }
 
-  function send_user_data(e: React.FormEvent<HTMLFormElement>, name: string, group: string, section: string) {
+  async function send_user_data(e: React.FormEvent<HTMLFormElement>, name: string, group: string, section: string) {
     e.preventDefault();
 
     const data = {
@@ -62,7 +62,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
       section: section
     }
 
-    request('PUT', '/user/me', "application/json", JSON.stringify(data))
+    await request('PUT', '/user/me', "application/json", JSON.stringify(data))
       .then(async () => {
         const me = await getMe();
         me.name = name;
