@@ -1,6 +1,6 @@
 'use client';
 
-import { request } from '@/utils/request-utils';
+import { request } from '@/lib/request-utils';
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Loader from "../_components/Loader";
@@ -11,7 +11,7 @@ function File() {
     const id_file = searchParams.get('id_file');
 
     useEffect(() => {
-        request('GET', `/file?id_file=${id_file}`, 'application/json')
+        request('GET', `/file?id_file=${id_file}`, 'application/json', null, false)
             .then((data) => {
                 if (data && data.url) {
                     setUrl(data.url);
@@ -42,8 +42,9 @@ function File() {
 }
 
 export default function FileViewer() {
-    return (<Suspense fallback={<Loader />}>
-        <File />
-    </Suspense>
+    return (
+        <Suspense fallback={<Loader />}>
+            <File />
+        </Suspense>
     );
 }

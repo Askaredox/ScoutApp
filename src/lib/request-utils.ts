@@ -1,5 +1,6 @@
-import { AccessToken, refreshAuthToken } from "@/utils/auth";
+import { AccessToken, refreshAuthToken } from "@/lib/auth";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -11,28 +12,31 @@ export const request = async (
     body: string | null = null,
     auth: boolean = true,
 ) => {
-    try {
-        const response = await request_data(method, path, content_type, body, auth);
+    const response = await request_data(method, path, content_type, body, auth)
+        .catch(async (e) => {
+            console.log(e)
+            if (await refreshAuthToken()) {
+                return await request_data(method, path, content_type, body, auth);
+            }
+            else {
+                Cookies.remove("accessToken");
+                Cookies.remove("refreshToken");
+                Cookies.remove("avatar");
+                window.location.href = "/logout";
+            }
+        });
 
-        // Check if response is ok
-        if (response.status < 200 || response.status >= 300) {
-            const errorText = await response.data;
-            throw new Error(`HTTP Error: ${response?.status} - ${errorText}`);
-        }
+    if (!response) return;
 
-        // Try to parse response as JSON
-        return await response.data; // Handle empty response cases
-
-    } catch (e) {
-        console.log(e)
-        if (await refreshAuthToken()) {
-            return await request_data(method, path, content_type, body, auth);
-        }
-        else {
-            console.error("Request failed:", e);
-            return { error: "Request failed", details: e };
-        }
+    // Check if response is ok
+    if (response.status < 200 || response.status >= 300) {
+        const errorText = await response.data;
+        throw new Error(`HTTP Error: ${response?.status} - ${errorText}`);
     }
+
+    // Try to parse response as JSON
+    return await response.data; // Handle empty response cases
+
 };
 
 const request_data = async (

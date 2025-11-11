@@ -53,7 +53,7 @@ export interface Event {
     expire_date: string;
 }
 
-export interface Metadata {
+export interface Metadata<T> {
     metadata: {
         page: number, // current page
         per_page: number, // data that is supossed to be in each page
@@ -67,5 +67,15 @@ export interface Metadata {
             last: string
         }
     },
-    data: Array<Event>
+    data: Array<T>
+}
+
+export interface User {
+    avatar: string;
+    email: string;
+    email_verified: string;
+    groups: string;
+    name: string;
+    sub: string;
+    section: string;
 }

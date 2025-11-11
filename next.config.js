@@ -4,6 +4,7 @@ const nextConfig = {
     domains: [
       process.env.NEXT_PUBLIC_S3_FILESYSTEM_URL || 'localhost',
       process.env.NEXT_PUBLIC_S3_EVENTS_URL || 'localhost',
+      process.env.NEXT_PUBLIC_S3_AVATAR_URL || 'localhost',
     ], // Add your domain here
   },
   webpack(config) {
