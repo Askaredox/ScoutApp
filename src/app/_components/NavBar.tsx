@@ -1,8 +1,10 @@
-import { AccessToken } from '@/lib/auth';
+import { AccessToken, getMe, refreshAuthToken } from '@/lib/auth';
 import { User } from '@/lib/interfaces';
+import { request } from '@/lib/request-utils';
 import Cookies from "js-cookie";
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
+import UserModal from './UserModal';
 
 type NavBarProps = {
   callback?: () => void;
@@ -13,6 +15,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
   const [user, setUser] = React.useState<User | undefined>(undefined);
   const [sidenav, setSidenav] = React.useState<boolean>(false);
   const { replace } = useRouter();
+  const [showUserModal, setShowUserModal] = React.useState(false);
 
   useEffect(() => {
     if (!AccessToken.is_authenticated()) {
@@ -21,6 +24,9 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
     else {
       const me = AccessToken.get_user();
       setUser(me);
+      if (me.name === null || me.name === undefined || me.name === "NONE") {
+        setShowUserModal(true);
+      }
       callback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,6 +51,29 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
     Cookies.remove("refreshToken");
 
     replace("/logout");
+  }
+
+  function send_user_data(e: React.FormEvent<HTMLFormElement>, name: string, group: string, section: string) {
+    e.preventDefault();
+
+    const data = {
+      name: name,
+      user_type: group,
+      section: section
+    }
+
+    request('PUT', '/user/me', "application/json", JSON.stringify(data))
+      .then(async () => {
+        const me = await getMe();
+        me.name = name;
+        me.groups = group;
+        me.section = section;
+
+        setUser(me);
+        await refreshAuthToken();
+        setShowUserModal(false);
+      })
+
   }
 
   return (
@@ -204,6 +233,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
           </div>
         </footer>
       </aside>
+      <UserModal show={showUserModal} setShow={setShowUserModal} send_data={send_user_data} />
     </div>
 
   );

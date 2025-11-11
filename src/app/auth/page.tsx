@@ -23,7 +23,7 @@ const Auth = () => {
                 const response = await request('POST', "/token", 'application/json', JSON.stringify({ 'code': code, 'redirect_uri': `${window.location.origin}/auth` }), false);
                 AccessToken.setToken(response.idToken);
                 const me = await getMe();
-                AccessToken.setAvatar(me.avatar);
+                AccessToken.setAttrs(me.avatar, me.name);
 
                 if (state)
                     push(decodeURIComponent(state));

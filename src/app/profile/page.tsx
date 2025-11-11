@@ -1,17 +1,18 @@
 'use client';
 
 import NavBar from '@/app/_components/NavBar';
-import { getMe } from '@/lib/auth';
+import { getMe, refreshAuthToken } from '@/lib/auth';
 import { User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { upload_presigned_url } from '@/lib/utils';
-import { useRef, useState } from "react";
+import { useState } from "react";
 import CreateModal from '../_components/CreateModal';
+import UserModal from '../_components/UserModal';
 
 export default function UserProfile() {
-  const [normaluser, setNormaluser] = useState<User>();
+  const [user, setUser] = useState<User>();
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
-  const newFileDRef = useRef(null);
+  const [showUserModal, setShowUserModal] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
@@ -49,7 +50,7 @@ export default function UserProfile() {
 
   async function get_me() {
     const user = await getMe();
-    setNormaluser({ sub: user.sub, email: user.email, email_verified: user.email_verified, name: user.name, groups: user.groups, avatar: user.avatar, section: user.section });
+    setUser({ sub: user.sub, email: user.email, email_verified: user.email_verified, name: user.name, groups: user.groups, avatar: user.avatar, section: user.section });
     setAvatar(get_avatar(user.avatar, user.sub));
   }
 
@@ -74,6 +75,30 @@ export default function UserProfile() {
     }
     setAvatarFile(files[0]);
   }
+
+  function send_user_data(e: React.FormEvent<HTMLFormElement>, name: string, group: string, section: string) {
+    e.preventDefault();
+
+    const data = {
+      name: name,
+      user_type: group,
+      section: section
+    }
+
+    request('PUT', '/user/me', "application/json", JSON.stringify(data))
+      .then(async () => {
+        const me = await getMe();
+        me.name = name;
+        me.groups = group;
+        me.section = section;
+
+        setUser(me);
+        await refreshAuthToken();
+        setShowUserModal(false);
+      })
+
+  }
+
 
   return (
     <main>
@@ -107,21 +132,30 @@ export default function UserProfile() {
                 </div>
 
                 <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Sección</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{normaluser?.section}</p>
+                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.section}</p>
                 <br />
 
                 <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Usuario</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{normaluser?.name}</p>
+                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.name}</p>
                 <br />
 
                 <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Correo registrado</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{normaluser?.email}</p>
+                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.email}</p>
                 <br />
 
                 <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Tipo usuario</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{normaluser?.groups}</p>
+                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.groups}</p>
                 <br />
 
+                <div className='flex justify-end'>
+
+                  <button type="button" onClick={() => setShowUserModal(true)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Modificar información
+                    <svg className="w-6 h-6 ml-2 text-gray-800 dark:text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -156,6 +190,7 @@ export default function UserProfile() {
           </div>
         </div>
       </CreateModal>
+      <UserModal show={showUserModal} setShow={setShowUserModal} send_data={send_user_data} />
     </main>
 
   );
