@@ -158,7 +158,7 @@ export default function AdminEvent() {
       image_name: eventportrait?.name,
       information_name: eventinformation?.name,
     };
-    request('POST', '/event', "application/json", JSON.stringify(data))
+    await request('POST', '/event', "application/json", JSON.stringify(data))
       .then(async (event) => {
         if (eventportrait) // check if the file is null
           await upload_presigned_url(eventportrait, event.post_data.url);

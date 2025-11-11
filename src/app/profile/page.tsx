@@ -28,7 +28,7 @@ export default function UserProfile() {
       file_data: avatarFile
     }
 
-    request('POST', '/user/me/avatar', 'application/json', JSON.stringify(data))
+    await request('POST', '/user/me/avatar', 'application/json', JSON.stringify(data))
       .then(async (avatar_data) => {
         console.log(avatar_data);
         await upload_presigned_url(avatarFile, avatar_data.avatar_data.url);

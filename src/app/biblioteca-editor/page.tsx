@@ -134,7 +134,7 @@ export default function AdminBiblioteca() {
   async function newFolder(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const parent_id = url[url.length - 1].id
-    request('POST', '/folder', 'application/json', JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': newFolderName, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
+    await request('POST', '/folder', 'application/json', JSON.stringify({ 'id_parent_folder': 'FOLDER#' + parent_id, 'name': newFolderName, 'can_download': newFolderCanDownload, 'can_view': newFolderCanView }))
       .then(() => {
         update_folders();
         setNewFolderModal(false);
@@ -164,7 +164,7 @@ export default function AdminBiblioteca() {
       'can_view': newFolderCanView,
       'description': newFileDescription,
     };
-    request('POST', '/file', 'application/json', JSON.stringify(data))
+    await request('POST', '/file', 'application/json', JSON.stringify(data))
       .then(async (folder_data) => {
         await upload_presigned_url(newFileD, folder_data.file_data.url);
         await upload_thumbnail(thumbnail, folder_data.thumbnail_data.url);
