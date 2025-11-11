@@ -84,6 +84,7 @@ export default function AdminBiblioteca() {
 
   useEffect(() => {
     update_folders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
   const resetFileDRef = () => {
@@ -234,7 +235,7 @@ export default function AdminBiblioteca() {
   }
   function onFileDrop(event: React.DragEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
     event.preventDefault();
-    let files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
+    const files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
     if (files === null) {
       alert("No se ha seleccionado ningun archivo");
       return;
@@ -377,7 +378,7 @@ export default function AdminBiblioteca() {
                     <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-700">
                       <td className="px-2 py-2 cursor-pointer" align="center" onClick={async () => await view_file(file)}>
                         <div className="relative w-[60px] h-auto">
-                          <img className="h-24 w-full object-contain" src={file.thumbnail} alt="" />
+                          <img className="h-24 w-full object-contain" src={file.thumbnail} alt={file.name} />
                         </div>
                       </td>
                       <td scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white cursor-pointer" onClick={async () => await view_file(file)}>

@@ -7,7 +7,6 @@ import { Metadata, User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { useState } from 'react';
 
-import Image from 'next/image';
 import NavBar from '../_components/NavBar';
 
 
@@ -45,6 +44,15 @@ export default function AdminScout() {
                 setFilteredUser(user_data_res.data);
                 setReady(true);
             })
+    }
+
+    function get_avatar(user: User) {
+        if (user.avatar === null || user.avatar === "NONE") {
+            return 'https://avatars.githubusercontent.com/u/' + user.sub.replace(/\D/g, "").slice(0, 8);
+        }
+        else {
+            return user.avatar;
+        }
     }
 
     function group_icon(group: string) {
@@ -112,7 +120,7 @@ export default function AdminScout() {
                                 filteredUser.map((a, i) => (
                                     <tr key={i} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td className="px-1 py-3 flex justify-center">
-                                            <Image src={a.avatar} width={60} height={60} alt={a.email + '_avatar'} className="w-8 h-8 rounded-full shadow-lg object-cover" />
+                                            <img src={get_avatar(a)} width={60} height={60} alt={a.email + '_avatar'} className="w-8 h-8 rounded-full shadow-lg object-cover" />
                                         </td>
                                         <td className="px-4 py-3 font-medium">{a.email}</td>
                                         <td className="px-4 py-3 font-medium">{a.name}</td>

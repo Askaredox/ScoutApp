@@ -7,7 +7,6 @@ import DataTable from '@/app/_components/Table';
 import { Event, Event_response, Metadata } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { formatDateToYYYYMMDD, upload_presigned_url } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
 import AddButton from '@/app/_components/AddButton';
@@ -39,8 +38,6 @@ export default function AdminEvent() {
 
   const [deleteEventModal, setDeleteEventModal] = useState<boolean>(false);
   const [deleteEventId, setDeleteEventId] = useState<string>('');
-
-  const { replace } = useRouter();
 
   const resetEventPortraitRef = () => {
     if (eventPortraitRef.current) {
@@ -225,7 +222,7 @@ export default function AdminEvent() {
   }
   function onFileDrop(event: React.DragEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>, type: string, edit: boolean = false) {
     event.preventDefault();
-    let files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
+    const files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
     if (files === null || files.length === 0) {
       return;
     }

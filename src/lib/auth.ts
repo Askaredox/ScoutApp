@@ -28,7 +28,7 @@ export class AccessToken {
         }
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())['cognito:groups'][0];
     }
-    public static get_data(): any | null {
+    public static get_data(): unknown | null {
         const token = Cookies.get('access_token');
         if (!token) {
             return null;

@@ -60,7 +60,7 @@ export default function UserProfile() {
   }
   function onFileDrop(event: React.DragEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
     event.preventDefault();
-    let files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
+    const files = 'dataTransfer' in event ? event.dataTransfer.files : event.target.files;
     if (files === null) {
       return;
     }

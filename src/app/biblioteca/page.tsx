@@ -65,6 +65,7 @@ export default function UserBiblioteca() {
 
   useEffect(() => {
     update_folders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
   function update_folders() {

@@ -2,6 +2,7 @@ import { AccessToken, getMe, refreshAuthToken } from '@/lib/auth';
 import { User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import Cookies from "js-cookie";
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import UserModal from './UserModal';
@@ -89,10 +90,10 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
                 </svg>
 
               </button>
-              <a href="/" className="flex ms-2 md:me-24">
+              <Link href="/" className="flex ms-2 md:me-24">
                 <img src="/logo.svg" className="h-8 me-3" alt="Logo Scouteca" />
                 <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Scouteca</span>
-              </a>
+              </Link>
             </div>
             <div className="flex items-center">
               <div className="flex items-center ms-3" >
@@ -169,12 +170,12 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="font-medium">
             <li>
-              <a href="/" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link href="/" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
                 </svg>
                 <span className="ms-3">Inicio</span>
-              </a>
+              </Link>
             </li>
 
             <li>
