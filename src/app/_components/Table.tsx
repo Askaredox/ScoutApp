@@ -1,5 +1,5 @@
+import Loader from '@/app/_components/Loader';
 import React from 'react';
-import Loader from './Loader';
 
 type TableProps = {
     ready: boolean; // Indica si los datos están listos para mostrar

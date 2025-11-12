@@ -1,11 +1,12 @@
+import UserModal from '@/app/_components/UserModal';
+import Cookies from "js-cookie";
+import Link from 'next/link';
+
 import { AccessToken, getMe, refreshAuthToken } from '@/lib/auth';
 import { User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
-import Cookies from "js-cookie";
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
-import UserModal from './UserModal';
 
 type NavBarProps = {
   callback?: () => void;

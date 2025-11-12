@@ -1,4 +1,4 @@
-import styles from './styles.module.css';
+import styles from '@/app/_components/styles.module.css';
 
 import React from 'react';
 

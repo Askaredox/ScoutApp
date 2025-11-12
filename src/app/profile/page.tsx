@@ -1,14 +1,15 @@
 'use client';
 
+import CreateModal from '@/app/_components/CreateModal';
+import Loader from '@/app/_components/Loader';
 import NavBar from '@/app/_components/NavBar';
+import UserModal from '@/app/_components/UserModal';
+
 import { getMe, refreshAuthToken } from '@/lib/auth';
 import { User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { upload_presigned_url } from '@/lib/utils';
 import { useState } from "react";
-import CreateModal from '../_components/CreateModal';
-import Loader from '../_components/Loader';
-import UserModal from '../_components/UserModal';
 
 export default function UserProfile() {
   const [user, setUser] = useState<User>();

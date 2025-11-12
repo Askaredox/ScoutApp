@@ -1,8 +1,9 @@
 "use client";
 
+import Loader from '@/app/_components/Loader';
+
 import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI } from '@/lib/utils';
 import { useEffect } from "react";
-import Loader from '../_components/Loader';
 
 
 const Logout = () => {

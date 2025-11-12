@@ -1,13 +1,13 @@
 'use client';
 import Header from '@/app/_components/Header';
+import NavBar from '@/app/_components/NavBar';
 import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
+
 import { Metadata, User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { useState } from 'react';
-
-import NavBar from '../_components/NavBar';
 
 
 export default function AdminScout() {

@@ -1,9 +1,10 @@
 'use client';
 
+import Loader from "@/app/_components/Loader";
+
 import { request } from '@/lib/request-utils';
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import Loader from "../_components/Loader";
 
 function File() {
     const [url, setUrl] = useState<string | null>(null);

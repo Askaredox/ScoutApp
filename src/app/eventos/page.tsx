@@ -1,17 +1,17 @@
 'use client';
+import AddButton from '@/app/_components/AddButton';
 import CreateModal from '@/app/_components/CreateModal';
 import Header from '@/app/_components/Header';
+import NavBar from '@/app/_components/NavBar';
 import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
+import Image from 'next/image';
+
 import { Event, Event_response, Metadata } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { formatDateToYYYYMMDD, upload_presigned_url } from '@/lib/utils';
 import { useRef, useState } from 'react';
-
-import AddButton from '@/app/_components/AddButton';
-import Image from 'next/image';
-import NavBar from '../_components/NavBar';
 
 
 export default function AdminEvent() {

@@ -1,5 +1,5 @@
+import Loader from '@/app/_components/Loader';
 import React, { useState } from 'react';
-import Loader from './Loader';
 
 type TableCrumbsProps = {
     ready: boolean;

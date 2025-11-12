@@ -3,11 +3,11 @@ import React from "react";
 type FolderCardProps = {
     title: string;
     onClick: () => void;
-    onDelete: () => void;
+    onDelete?: () => void;
     is_admin: boolean
 };
 
-const FolderCard: React.FC<FolderCardProps> = ({ title, onClick, onDelete, is_admin }) => {
+const FolderCard: React.FC<FolderCardProps> = ({ title, onClick, onDelete = () => { }, is_admin }) => {
     return (
         <div tabIndex={0} className="focus:outline-2 focus:outline-offset-2 focus:outline-blue-400 focus:outline-dashed rounded-lg cursor-pointer" onDoubleClick={onClick}>
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">

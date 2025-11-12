@@ -1,10 +1,11 @@
 "use client";
 
+import Loader from "@/app/_components/Loader";
+
 import { AccessToken, getMe } from "@/lib/auth";
 import { request } from "@/lib/request-utils";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Loader from "../_components/Loader";
 
 const Auth = () => {
     const { push } = useRouter();

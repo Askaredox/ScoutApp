@@ -1,9 +1,10 @@
 "use client";
 
+import Loader from '@/app/_components/Loader';
+
 import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI, COGNITO_RESPONSE_TYPE } from '@/lib/utils';
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
-import Loader from '../_components/Loader';
 
 function LoginPage() {
     const searchParams = useSearchParams();

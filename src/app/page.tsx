@@ -1,11 +1,12 @@
 'use client';
 
+import Loader from '@/app/_components/Loader';
 import NavBar from '@/app/_components/NavBar';
+import Image from "next/image";
+
 import { Event, Event_response } from "@/lib/interfaces";
 import { request } from '@/lib/request-utils';
-import Image from "next/image";
 import { useState } from "react";
-import Loader from './_components/Loader';
 
 export default function Admin() {
   const [events, setEvents] = useState<Event[]>([]);
