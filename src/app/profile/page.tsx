@@ -7,6 +7,7 @@ import { request } from '@/lib/request-utils';
 import { upload_presigned_url } from '@/lib/utils';
 import { useState } from "react";
 import CreateModal from '../_components/CreateModal';
+import Loader from '../_components/Loader';
 import UserModal from '../_components/UserModal';
 
 export default function UserProfile() {
@@ -53,6 +54,7 @@ export default function UserProfile() {
     const user = await getMe();
     setUser({ sub: user.sub, email: user.email, email_verified: user.email_verified, name: user.name, groups: user.groups, avatar: user.avatar, section: user.section });
     setAvatar(get_avatar(user.avatar, user.sub));
+    setReady(true);
   }
 
 
@@ -104,64 +106,67 @@ export default function UserProfile() {
   return (
     <main>
       <NavBar callback={get_me} />
-      <div className="md:ml-56 mt-16 md:mt-14">
-        <div className="min-h-screen size-full dark:bg-gray-900 bg-gray-50 flex justify-center">
-          <section className="size-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased ">
-            <div className="mx-auto max-w-screen-xl px-2">
-              <div className="max-w p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+      {!ready ? <Loader /> : (
 
-                <h4 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Información Personal</h4>
-                <hr className="my-4 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent  dark:via-neutral-400" />
+        <div className="md:ml-56 mt-16 md:mt-14">
+          <div className="min-h-screen size-full dark:bg-gray-900 bg-gray-50 flex justify-center">
+            <section className="size-full bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased ">
+              <div className="mx-auto max-w-screen-xl px-2">
+                <div className="max-w p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
-                <div className="flex justify-center mb-4">
-                  {
-                    avatar == undefined ? (
-                      <div className="w-32 h-32 rounded-full shadow-lg bg-gray-300 animate-pulse"></div>
-                    ) : (
-                      <figure className="relative w-32 h-32 rounded-full transition-all duration-300 filter">
-                        <img className="w-32 h-32 rounded-full shadow-lg object-cover" src={avatar} alt="Avatar" />
-                        <span className="bg-blue-200 text-s font-medium text-blue-800 text-center p-0.5 leading-none rounded-full cursor-pointer px-2 dark:bg-blue-900 dark:text-blue-200 absolute translate-y-1/2 translate-x-1/2  left-auto bottom-4 right-4" onClick={() => setCreateModalOpen(true)}>
-                          <svg className="w-8 h-8 text-gray-800 dark:text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                          </svg>
-                        </span>
-                      </figure>
+                  <h4 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Información Personal</h4>
+                  <hr className="my-4 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent  dark:via-neutral-400" />
 
-                    )
-                  }
+                  <div className="flex justify-center mb-4">
+                    {
+                      avatar == undefined ? (
+                        <div className="w-32 h-32 rounded-full shadow-lg bg-gray-300 animate-pulse"></div>
+                      ) : (
+                        <figure className="relative w-32 h-32 rounded-full transition-all duration-300 filter">
+                          <img className="w-32 h-32 rounded-full shadow-lg object-cover" src={avatar} alt="Avatar" />
+                          <span className="bg-blue-200 text-s font-medium text-blue-800 text-center p-0.5 leading-none rounded-full cursor-pointer px-2 dark:bg-blue-900 dark:text-blue-200 absolute translate-y-1/2 translate-x-1/2  left-auto bottom-4 right-4" onClick={() => setCreateModalOpen(true)}>
+                            <svg className="w-8 h-8 text-gray-800 dark:text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                            </svg>
+                          </span>
+                        </figure>
 
-                </div>
+                      )
+                    }
 
-                <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Sección</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.section}</p>
-                <br />
+                  </div>
 
-                <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Usuario</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.name}</p>
-                <br />
+                  <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Sección</h6>
+                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.section}</p>
+                  <br />
 
-                <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Correo registrado</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.email}</p>
-                <br />
+                  <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Usuario</h6>
+                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.name}</p>
+                  <br />
 
-                <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Tipo usuario</h6>
-                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.groups}</p>
-                <br />
+                  <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Correo registrado</h6>
+                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.email}</p>
+                  <br />
 
-                <div className='flex justify-end'>
+                  <h6 className="mb-2 text-xl tracking-tight text-gray-900 dark:text-white">Tipo usuario</h6>
+                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{user?.groups}</p>
+                  <br />
 
-                  <button type="button" onClick={() => setShowUserModal(true)} className="text-white cursor-pointer bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Modificar información
-                    <svg className="w-6 h-6 ml-2 text-gray-800 dark:text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                    </svg>
-                  </button>
+                  <div className='flex justify-end'>
+
+                    <button type="button" onClick={() => setShowUserModal(true)} className="text-white cursor-pointer bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                      Modificar información
+                      <svg className="w-6 h-6 ml-2 text-gray-800 dark:text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
-      </div>
+      )}
       <CreateModal title="Cambiar avatar" toggleModal={createModalOpen} onClose={() => { setCreateModalOpen(false) }} onSubmit={changeAvatar}>
         <div>
           <div className="w-full mb-4">
