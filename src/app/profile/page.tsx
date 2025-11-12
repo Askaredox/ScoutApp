@@ -15,6 +15,7 @@ export default function UserProfile() {
   const [showUserModal, setShowUserModal] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [ready, setReady] = useState(false);
 
   async function changeAvatar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
