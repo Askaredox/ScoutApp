@@ -426,7 +426,8 @@ export default function AdminBiblioteca() {
                       key={i}
                       title={folder.name}
                       onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}
-                      onDelete={() => console.log('delete')}
+                      onDelete={() => delete_folder(folder.id)}
+                      is_admin={true}
                     />
                   ))
                 }
@@ -436,7 +437,8 @@ export default function AdminBiblioteca() {
                     title={file.name}
                     image={file.thumbnail}
                     onClick={async () => await view_file(file)}
-                    onDelete={() => console.log('delete')}
+                    onDelete={() => delete_file(file.id)}
+                    is_admin={true}
                   />
                 ))}
               />
@@ -577,47 +579,3 @@ export default function AdminBiblioteca() {
     </main>
   );
 }
-/**
- *  // cambio de vista de folders y archivos
- * <ul className="items-center text-sm font-small text-gray-900 bg-white border border-gray-200 rounded-full flex dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                      <li className="border-gray-200 border-r dark:border-gray-600">
-                        <div className="flex items-center ps-3">
-                          <input id="horizontal-list-radio-license" type="radio" value="0" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                          </input>
-                          <label className="w-full m-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                            <svg className="h-4 w-4 text-gray-400" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                              <path stroke="none" d="M0 0h24v24H0z" />
-
-                              <line x1="4" y1="6" x2="20" y2="6" />
-                              <line x1="4" y1="12" x2="20" y2="12" />
-                              <line x1="4" y1="18" x2="20" y2="18" />
-                            </svg>
-                          </label>
-                        </div>
-                      </li>
-                      <li className="border-gray-200 dark:border-gray-600">
-                        <div className="flex items-center ps-3">
-                          <input id="horizontal-list-radio-id" type="radio" value="1" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                          </input>
-                          <label className="w-full m-2 text-sm text-gray-900 dark:text-gray-300">
-                            <svg className="h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="3" width="7" height="7" />
-                              <rect x="14" y="3" width="7" height="7" />
-                              <rect x="14" y="14" width="7" height="7" />
-                              <rect x="3" y="14" width="7" height="7" />
-                            </svg>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-
-
-
-
-                    <svg className="h-5 w-5 text-gray-400" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                                                <path stroke="none" d="M0 0h24v24H0z" />
-                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                            </svg>
-
- */
