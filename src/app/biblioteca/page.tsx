@@ -191,6 +191,7 @@ export default function UserBiblioteca() {
                       title={folder.name}
                       onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}
                       onDelete={() => console.log('delete')}
+                      is_admin={false}
                     />
                   ))
                 }
@@ -201,6 +202,7 @@ export default function UserBiblioteca() {
                     image={file.thumbnail}
                     onClick={async () => await view_file(file)}
                     onDelete={() => console.log('delete')}
+                    is_admin={false}
                   />
                 ))}
               />

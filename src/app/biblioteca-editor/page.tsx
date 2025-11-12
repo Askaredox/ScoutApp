@@ -427,6 +427,7 @@ export default function AdminBiblioteca() {
                       title={folder.name}
                       onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}
                       onDelete={() => console.log('delete')}
+                      is_admin={true}
                     />
                   ))
                 }
@@ -437,6 +438,7 @@ export default function AdminBiblioteca() {
                     image={file.thumbnail}
                     onClick={async () => await view_file(file)}
                     onDelete={() => console.log('delete')}
+                    is_admin={true}
                   />
                 ))}
               />
