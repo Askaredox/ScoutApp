@@ -8,7 +8,7 @@ type FolderCardProps = {
 
 const FolderCard: React.FC<FolderCardProps> = ({ title, onClick, onDelete }) => {
     return (
-        <div className="focus:outline-2 focus:outline-offset-2 focus:outline-gray-400 focus:outline-dashed cursor-pointer" onDoubleClick={onClick}>
+        <div tabIndex={0} className="focus:outline-2 focus:outline-offset-2 focus:outline-blue-400 focus:outline-dashed rounded-lg cursor-pointer" onDoubleClick={onClick}>
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                 <div className="m-2 flex justify-between">
                     <div className="flex justify-center items-center">
