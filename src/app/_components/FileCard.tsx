@@ -4,11 +4,11 @@ type FileCardProps = {
     title: string;
     image: string;
     onClick: () => void;
-    onDelete: () => void;
+    onDelete?: () => void;
     is_admin: boolean
 };
 
-const FileCard: React.FC<FileCardProps> = ({ title, image, onClick, onDelete, is_admin }) => {
+const FileCard: React.FC<FileCardProps> = ({ title, image, onClick, onDelete = () => { }, is_admin }) => {
     return (
         <div tabIndex={0} className="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 focus:outline-2 focus:outline-offset-2 focus:outline-blue-400 cursor-pointer" onDoubleClick={onClick}>
             <div className="m-2 flex justify-between">

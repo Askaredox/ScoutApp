@@ -2,17 +2,17 @@
 
 import AddButton from '@/app/_components/AddButton';
 import CreateModal from '@/app/_components/CreateModal';
+import FileCard from '@/app/_components/FileCard';
+import FolderCard from '@/app/_components/FolderCard';
 import Header from '@/app/_components/Header';
+import NavBar from '@/app/_components/NavBar';
 import TableCrumbs from '@/app/_components/TableCrumbs';
+
 import { File_data, Folder_data } from "@/lib/interfaces";
 import { request } from '@/lib/request-utils';
 import { create_thumbnail, upload_presigned_url } from '@/lib/utils';
-
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from "react";
-import FileCard from '../_components/FileCard';
-import FolderCard from '../_components/FolderCard';
-import NavBar from '../_components/NavBar';
 
 
 function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.Dispatch<React.SetStateAction<{ path: string, id: string }[]>>) {

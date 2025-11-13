@@ -1,15 +1,16 @@
 'use client';
 
+import FileCard from '@/app/_components/FileCard';
+import FolderCard from '@/app/_components/FolderCard';
 import Header from '@/app/_components/Header';
+import NavBar from '@/app/_components/NavBar';
 import TableCrumbs from '@/app/_components/TableCrumbs';
+import Image from "next/image";
+
 import { File_data, Folder_data } from "@/lib/interfaces";
 import { request } from '@/lib/request-utils';
-import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
-import FileCard from '../_components/FileCard';
-import FolderCard from '../_components/FolderCard';
-import NavBar from '../_components/NavBar';
 
 
 function get_breadcrumb(url: Array<{ path: string, id: string }>, setUrl: React.Dispatch<React.SetStateAction<{ path: string, id: string }[]>>) {
@@ -193,7 +194,6 @@ export default function UserBiblioteca() {
                       key={i}
                       title={folder.name}
                       onClick={() => setUrl(url.concat({ 'path': folder.name, 'id': folder.id.split('#')[1] }))}
-                      onDelete={() => console.log('no delete')}
                       is_admin={false}
                     />
                   ))
@@ -204,7 +204,6 @@ export default function UserBiblioteca() {
                     title={file.name}
                     image={file.thumbnail}
                     onClick={async () => await view_file(file)}
-                    onDelete={() => console.log('no delete')}
                     is_admin={false}
                   />
                 ))}

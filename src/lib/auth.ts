@@ -1,7 +1,7 @@
 
+import { User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import Cookies from 'js-cookie';
-import { User } from './interfaces';
 
 export class AccessToken {
     public static setToken(token: string) {
