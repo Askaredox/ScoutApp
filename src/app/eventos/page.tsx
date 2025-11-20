@@ -301,7 +301,7 @@ export default function AdminEvent() {
                 filteredEvents.map((a) => (
                   <tr key={a.id_event} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-4 py-3">
-                      <Image src={a.post} width={60} height={0} alt="Banner" className="h-10 w-auto rounded-md object-cover" />
+                      <Image src={a.post} width={60} height={0} alt={a.title} className="h-10 w-auto rounded-md object-cover" />
                     </td>
                     <td className="px-4 py-3 font-medium">{a.title}</td>
                     <td className="px-4 py-3 truncate max-w-sm">{a.description}</td>

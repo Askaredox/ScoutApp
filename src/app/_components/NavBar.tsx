@@ -111,7 +111,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
                     <div className="relative w-8 h-8">
                       <Image
                         src={get_avatar(user)}
-                        alt="Avatar"
+                        alt="avatar"
                         fill
                         className="rounded-full shadow-lg object-cover"
                       />

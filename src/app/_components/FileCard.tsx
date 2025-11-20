@@ -59,7 +59,7 @@ const FileCard: React.FC<FileCardProps> = ({ title, image, onClick, onDelete = (
             <div className="relative h-48 w-full mb-2">
                 <Image
                     src={image}
-                    alt=""
+                    alt={title}
                     fill
                     className="rounded-t-lg object-contain"
                 />
