@@ -4,6 +4,7 @@ import NavBar from '@/app/_components/NavBar';
 import Pagination from '@/app/_components/Pagination';
 import SearchBar from '@/app/_components/SearchBar';
 import DataTable from '@/app/_components/Table';
+import Image from 'next/image';
 
 import { Metadata, User } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
@@ -120,12 +121,21 @@ export default function AdminScout() {
                                 filteredUser.map((a, i) => (
                                     <tr key={i} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td className="px-1 py-3 flex justify-center">
-                                            <img src={get_avatar(a)} width={60} height={60} alt={a.email + '_avatar'} className="w-8 h-8 rounded-full shadow-lg object-cover" />
+                                            <div className="relative w-8 h-8">
+                                                <Image
+                                                    src={get_avatar(a)}
+                                                    alt={`${a.email}_avatar`}
+                                                    fill
+                                                    className="rounded-full shadow-lg object-cover"
+                                                />
+                                            </div>
                                         </td>
                                         <td className="px-4 py-3 font-medium">{a.email}</td>
                                         <td className="px-4 py-3 font-medium">{a.name}</td>
                                         <td className="px-4 py-3 font-medium">{a.section}</td>
-                                        <td className="px-4 py-3 font-medium flex flex-row">{group_icon(a.groups)} {a.groups}</td>
+                                        <td className="px-4 py-3 font-medium flex flex-row">
+                                            <div className="mr-2">{group_icon(a.groups)} </div>
+                                            {a.groups}</td>
                                         {/* 
                                         <td className="px-4 py-3 text-right">
                                             <div className="relative inline-block text-left">

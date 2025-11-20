@@ -174,8 +174,13 @@ export default function UserBiblioteca() {
                   files.map((file, i) => (
                     <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-700" onClick={async () => await view_file(file)}>
                       <td className="px-2 py-2" align="center">
-                        <div className="relative w-[60px] h-auto">
-                          <Image src={file.thumbnail} width={60} height={0} alt="X" layout="intrinsic" />
+                        <div className="relative w-[60px] h-24">
+                          <Image
+                            src={file.thumbnail}
+                            alt={file.name}
+                            fill
+                            className="object-contain"
+                          />
                         </div>
                       </td>
                       <td scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">

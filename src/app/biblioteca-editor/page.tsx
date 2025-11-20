@@ -7,6 +7,7 @@ import FolderCard from '@/app/_components/FolderCard';
 import Header from '@/app/_components/Header';
 import NavBar from '@/app/_components/NavBar';
 import TableCrumbs from '@/app/_components/TableCrumbs';
+import Image from "next/image";
 
 import { File_data, Folder_data } from "@/lib/interfaces";
 import { request } from '@/lib/request-utils';
@@ -377,8 +378,13 @@ export default function AdminBiblioteca() {
                   files.map((file, i) => (
                     <tr key={i + 1} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-700">
                       <td className="px-2 py-2 cursor-pointer" align="center" onClick={async () => await view_file(file)}>
-                        <div className="relative w-[60px] h-auto">
-                          <img className="h-24 w-full object-contain" src={file.thumbnail} alt={file.name} />
+                        <div className="relative w-[60px] h-24">
+                          <Image
+                            src={file.thumbnail}
+                            alt={file.name}
+                            fill
+                            className="object-contain"
+                          />
                         </div>
                       </td>
                       <td scope="row" className="w-4/5 px-2 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white cursor-pointer" onClick={async () => await view_file(file)}>
