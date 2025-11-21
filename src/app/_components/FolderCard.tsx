@@ -10,15 +10,15 @@ type FolderCardProps = {
 const FolderCard: React.FC<FolderCardProps> = ({ title, onClick, onDelete = () => { }, is_admin }) => {
     return (
         <div tabIndex={0} className="focus:outline-2 focus:outline-offset-2 focus:outline-blue-400 focus:outline-dashed rounded-lg cursor-pointer" onDoubleClick={onClick}>
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600">
                 <div className="m-2 flex justify-between">
                     <div className="flex justify-center items-center">
 
-                        <svg className="h-8 w-8 text-gray-400 " width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                        <svg className="h-6 w-6 text-gray-400 " width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" />
                             <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
                         </svg>
-                        <p className="h-6 text-md font-bold tracking-tight text-gray-900 dark:text-white overflow-hidden text-ellipsis word-break text-wrap line-clamp-1 break-all">{title}</p>
+                        <p className="h-6 text-md font-bold tracking-tight text-gray-900 dark:text-white overflow-hidden text-ellipsis word-break text-wrap line-clamp-1 break-all mx-3">{title}</p>
                     </div>
                     {is_admin && (
                         <button type="button" className="focus:outline-none cursor-pointer hover:bg-gray-700 rounded-full" onClick={onDelete}>

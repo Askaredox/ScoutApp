@@ -1,5 +1,6 @@
 import UserModal from '@/app/_components/UserModal';
 import Cookies from "js-cookie";
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { AccessToken, getMe, refreshAuthToken } from '@/lib/auth';
@@ -92,7 +93,13 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
 
               </button>
               <Link href="/" className="flex ms-2 md:me-24">
-                <img src="/logo.svg" className="h-8 me-3" alt="Logo Scouteca" />
+                <Image
+                  src="/logo.svg"
+                  alt="Logo Scouteca"
+                  width={32}
+                  height={32}
+                  className="h-8 me-3"
+                />
                 <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Scouteca</span>
               </Link>
             </div>
@@ -101,7 +108,14 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
                 <button type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 cursor-pointer" onClick={open_user} aria-haspopup="true">
                   <span className="sr-only">Open user menu</span>
                   {user && (
-                    <img className="w-8 h-8 rounded-full shadow-lg object-cover" src={get_avatar(user)} alt="Avatar" />
+                    <div className="relative w-8 h-8">
+                      <Image
+                        src={get_avatar(user)}
+                        alt="avatar"
+                        fill
+                        className="rounded-full shadow-lg object-cover"
+                      />
+                    </div>
                   )}
                   {!user && (
                     <div role="status" className="space-y-2.5 animate-pulse max-w-lg">

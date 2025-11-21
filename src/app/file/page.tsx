@@ -1,51 +1,68 @@
-'use client';
+import { serverRequest } from "@/lib/server-request";
+import type { Metadata } from "next";
+import FileClient from "./FileClient";
 
-import Loader from "@/app/_components/Loader";
+type FilePageProps = {
+    searchParams: Promise<{ id_file?: string }>;
+};
 
-import { request } from '@/lib/request-utils';
-import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+// Opcional si todo es dinámico
+export const dynamic = "force-dynamic";
 
-function File() {
-    const [url, setUrl] = useState<string | null>(null);
-    const searchParams = useSearchParams();
-    const id_file = searchParams.get('id_file');
+export async function generateMetadata(
+    { searchParams }: FilePageProps
+): Promise<Metadata> {
+    const { id_file } = await searchParams;
+    const siteUrl = process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI || 'http://localhost:3000'
 
-    useEffect(() => {
-        request('GET', `/file?id_file=${id_file}`, 'application/json', null, false)
-            .then((data) => {
-                if (data && data.url) {
-                    setUrl(data.url);
-                } else {
-                    console.error("No URL found in response");
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching file URL:", error);
-            });
+    if (!id_file) {
+        return {
+            title: "File Viewer",
+            description: "Viewing file",
+            alternates: {
+                canonical: `${siteUrl}/file`,
+            },
+        };
+    }
 
-    }, [id_file]);
+    try {
+        const data = await serverRequest<{
+            title?: string;
+            description?: string;
+        }>(`/file?id_file=${id_file}`, {
+            method: "GET",
+        });
 
-    if (!url) return <Loader />;
+        const title = data?.title ?? "File Viewer";
+        const description = data?.description ?? "Viewing file";
 
-    return (
-        <div className="w-full h-screen">
-            <iframe
-                src={url}
-                title="Documento PDF"
-                width={0}
-                height={0}
-                style={{ border: "none", width: '100%', height: '100%' }}
-            />
+        const canonicalUrl = `${siteUrl}/file?id_file=${id_file}`;
 
-        </div>
-    );
+        return {
+            title,
+            description,
+            openGraph: {
+                title,
+                description,
+                url: canonicalUrl,
+            },
+            twitter: {
+                title,
+                description,
+            },
+            alternates: {
+                canonical: canonicalUrl,
+            },
+        };
+    } catch (error) {
+        console.error("Error fetching metadata for file:", error);
+        return {
+            title: "File Viewer",
+            description: "Viewing file",
+        };
+    }
 }
 
-export default function FileViewer() {
-    return (
-        <Suspense fallback={<Loader />}>
-            <File />
-        </Suspense>
-    );
+export default function FilePage() {
+    return <FileClient />;
 }
