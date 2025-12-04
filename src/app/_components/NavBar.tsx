@@ -92,7 +92,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
                 </svg>
 
               </button>
-              <Link href="/" className="flex ms-2 md:me-24">
+              <Link href="/dashboard" className="flex ms-2 md:me-24">
                 <Image
                   src="/logo.svg"
                   alt="Logo Scouteca"
@@ -185,7 +185,7 @@ const NavBar: React.FC<NavBarProps> = ({ callback = () => console.log('ok') }) =
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="font-medium">
             <li>
-              <Link href="/" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link href="/dashboard" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
                 </svg>

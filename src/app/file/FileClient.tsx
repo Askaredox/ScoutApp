@@ -1,6 +1,7 @@
 "use client";
 
 import Loader from "@/app/_components/Loader";
+import LoginBar from "@/app/_components/LoginBar";
 import { request } from "@/lib/request-utils";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,14 +30,18 @@ export default function FileClient() {
     if (!url) return <Loader />;
 
     return (
-        <div className="w-full h-screen">
-            <iframe
-                src={url}
-                title="Documento PDF"
-                height={0}
-                width={0}
-                style={{ border: "none", width: "100%", height: "100%" }}
-            />
+        <div className="mt-16 md:mt-14">
+            <LoginBar />
+            <div className="w-full h-screen">
+                <iframe
+                    src={url}
+                    title="Documento PDF"
+                    height={0}
+                    width={0}
+                    style={{ border: "none", width: "100%", height: "100%" }}
+                />
+            </div>
+
         </div>
     );
 }

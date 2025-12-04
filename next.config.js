@@ -1,5 +1,5 @@
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     domains: JSON.parse(process.env.NEXT_PUBLIC_ALLOWED_ORIGINS),
   },

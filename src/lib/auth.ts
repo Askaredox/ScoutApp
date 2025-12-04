@@ -5,38 +5,38 @@ import Cookies from 'js-cookie';
 
 export class AccessToken {
     public static setToken(token: string) {
-        Cookies.set('access_token', token, { sameSite: 'Lax' });
+        Cookies.set('accessToken', token, { sameSite: 'Lax' });
     }
     public static setAttrs(avatar: string, name: string) {
         Cookies.set('avatar', avatar, { sameSite: 'Lax' });
         Cookies.set('name', name, { sameSite: 'Lax' });
     }
     public static getToken(): string {
-        const token = Cookies.get('access_token');
+        const token = Cookies.get('accessToken');
         if (!token) {
             throw new Error("Access token not found in cookies");
         }
         return token;
     }
     public static is_authenticated(): boolean {
-        return !!Cookies.get('access_token');
+        return !!Cookies.get('accessToken');
     }
     public static get_group(): string | null {
-        const token = Cookies.get('access_token');
+        const token = Cookies.get('accessToken');
         if (!token) {
             return null;
         }
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())['cognito:groups'][0];
     }
     public static get_data(): unknown | null {
-        const token = Cookies.get('access_token');
+        const token = Cookies.get('accessToken');
         if (!token) {
             return null;
         }
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     }
     public static get_user(): User {
-        const token = Cookies.get('access_token');
+        const token = Cookies.get('accessToken');
         if (!token) {
             throw new Error("Access token not found in cookies");
         }

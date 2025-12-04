@@ -8,8 +8,8 @@ import { useEffect } from "react";
 
 const Logout = () => {
     useEffect(() => {
-        const loginUrl = `${COGNITO_DOMAIN}/logout?client_id=${COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(COGNITO_REDIRECT_URI + '/login')}`;
-        window.location.href = loginUrl;
+        const logoutUrl = `${COGNITO_DOMAIN}/logout?client_id=${COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(COGNITO_REDIRECT_URI + '/login')}`;
+        window.location.href = logoutUrl;
     }, []);
 
     return <Loader />;

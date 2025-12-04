@@ -29,7 +29,7 @@ const Auth = () => {
                 if (state)
                     push(decodeURIComponent(state));
                 else
-                    push("/");
+                    push("/dashboard");
             } catch (error) {
                 console.error("Token exchange failed", error);
                 push("/login");
