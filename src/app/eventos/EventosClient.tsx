@@ -1,6 +1,7 @@
 'use client';
 import AddButton from '@/app/_components/AddButton';
 import CreateModal from '@/app/_components/CreateModal';
+import DropZone from '@/app/_components/DropZone';
 import Header from '@/app/_components/Header';
 import NavBar from '@/app/_components/NavBar';
 import Pagination from '@/app/_components/Pagination';
@@ -12,6 +13,7 @@ import { Event, Event_response, Metadata } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { formatDateToYYYYMMDD, upload_presigned_url } from '@/lib/utils';
 import { useRef, useState } from 'react';
+import DatePicker from '../_components/DatePicker';
 
 
 export default function Eventos() {
@@ -24,7 +26,7 @@ export default function Eventos() {
     const [eventinformation, setEventinformation] = useState<File | null>(null);
     const eventPortraitRef = useRef(null);
     const eventInformationRef = useRef(null);
-    const [eventexpire, setEventexpire] = useState<string>('');
+    const [eventexpire, setEventexpire] = useState<string>((Date.now().toString().slice(0, 10)));
     const [searchTerm, setSearchTerm] = useState("");
 
     const [updateEventModal, setUpdateEventModal] = useState<boolean>(false);
@@ -355,68 +357,40 @@ export default function Eventos() {
                             <input type="text" id="subject" name="subject" value={eventsubject} onChange={(e) => setEventsubject(e.target.value)} placeholder="Título del Evento" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
                         </div>
 
-                        <div className="mb-4"> {
-                        }
+                        <div className="mb-4">
                             <label htmlFor="descr" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
                             <textarea id="descr" name="descr" value={eventshort_description} onChange={(e) => setEventshort_description(e.target.value)} placeholder="Breve descripción del evento" className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
                         </div>
 
                         <div className="mb-4">
                             <label htmlFor="expire" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de expiración</label>
-                            <input type="date" id="expire" name="expire" value={eventexpire} onChange={(e) => setEventexpire(e.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
+                            <input type="date" id="expire" name="expire" value={formatDateToYYYYMMDD(new Date(Number(eventexpire) * 1000))} onChange={(e) => console.log(e.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
+                        </div>
+
+                        <div>
+                            <DatePicker title="Expiración" />
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Imagen de portada </label>
-                            <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'portrait')}>
-                                <label htmlFor="dropzone-file-portrait" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                    {eventportrait === null ? (
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                            </svg>
-                                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">.jpg .jpeg .png .mp4 (MAX. 25MB).</p>
-                                        </div>
-
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
-                                            </svg>
-                                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{eventportrait.name}</span></p>
-                                        </div>
-                                    )}
-
-                                    <input id="dropzone-file-portrait" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'portrait')} />
-                                </label>
-                            </div>
+                            <DropZone
+                                title="Imagen de portada"
+                                file={eventportrait}
+                                onFileDrag={onFileDrag}
+                                onFileDrop={(e) => onFileDrop(e, 'portrait')}
+                                instructions='Click para subir o arrastra el archivo'
+                                accept='.jpg .jpeg .png .mp4 (MAX. 25MB).'
+                            />
                         </div>
 
-                        <div className="sm:col-span-2">
-                            <label htmlFor="information" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ficha técnica</label>
-                            <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'information')} >
-                                <label htmlFor="dropzone-file-info" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                    {eventinformation === null ? (
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                            </svg>
-                                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">.pdf (MAX. 25MB).</p>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
-                                            </svg>
-                                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{eventinformation.name}</span></p>
-                                        </div>
-                                    )}
-
-                                    <input id="dropzone-file-info" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'information')} />
-                                </label>
-                            </div>
+                        <div className="my-2">
+                            <DropZone
+                                title="Ficha técnica"
+                                file={eventinformation}
+                                onFileDrag={onFileDrag}
+                                onFileDrop={(e) => onFileDrop(e, 'information')}
+                                instructions='Click para subir o arrastra el archivo'
+                                accept='.pdf (MAX. 25MB).'
+                            />
                         </div>
                     </div>
                 </CreateModal>
@@ -497,57 +471,26 @@ export default function Eventos() {
 
                                     {/* Portada */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Portada </label>
-                                        <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'portrait', true)}>
-                                            <label htmlFor="dropzone-file-portrait" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                                {updateEventportrait === null ? (
-                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                        <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                                        </svg>
-                                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">.jpg .jpeg .png .mp4 (MAX. 25MB).</p>
-                                                    </div>
-
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                        <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
-                                                        </svg>
-                                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{updateEventportrait?.name}</span></p>
-                                                    </div>
-                                                )}
-
-                                                <input id="dropzone-file-portrait" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'portrait', true)} />
-                                            </label>
-                                        </div>
+                                        <DropZone
+                                            title="Imagen de portada"
+                                            file={updateEventportrait}
+                                            onFileDrag={onFileDrag}
+                                            onFileDrop={(e) => onFileDrop(e, 'portrait', true)}
+                                            instructions='Click para subir o arrastra el archivo'
+                                            accept='.jpg .jpeg .png .mp4 (MAX. 25MB).'
+                                        />
                                     </div>
 
                                     {/* Ficha técnica o archivo */}
                                     <div>
-                                        <label htmlFor="information" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Ficha técnica</label>
-                                        <div className="flex items-center justify-center w-full" onDragOver={onFileDrag} onDrop={(event) => onFileDrop(event, 'information', true)} >
-                                            <label htmlFor="dropzone-file-info" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                                {updateEventinformation === null ? (
-                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                        <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                                        </svg>
-                                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click para subir</span> o arrastra el archivo</p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">.pdf (MAX. 25MB).</p>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                        <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
-                                                        </svg>
-                                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{updateEventinformation?.name}</span></p>
-                                                    </div>
-                                                )}
-
-                                                <input id="dropzone-file-info" type="file" className="hidden" onChange={(event) => onFileDrop(event, 'information', true)} />
-                                            </label>
-                                        </div>
+                                        <DropZone
+                                            title="Ficha técnica"
+                                            file={updateEventinformation}
+                                            onFileDrag={onFileDrag}
+                                            onFileDrop={(e) => onFileDrop(e, 'information', true)}
+                                            instructions='Click para subir o arrastra el archivo'
+                                            accept='.pdf (MAX. 25MB).'
+                                        />
                                     </div>
                                 </div>
 
@@ -580,7 +523,7 @@ export default function Eventos() {
                     <div className="relative w-full max-w-2xl mx-auto p-4">
                         <div className="relative rounded-2xl bg-white shadow-xl dark:bg-gray-900 px-6 py-8">
                             <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-                                <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nuevo Evento</h3>
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Eliminar Evento</h3>
                                 <button type="button" onClick={() => setDeleteEventModal(false)} className="rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition" aria-label="Cerrar">
                                     <svg className="w-6 h-6 text-gray-600 dark:text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
