@@ -35,7 +35,7 @@ export default function About() {
                 <div className="pb-12 bg-gray-200 ">
                     <div className="grid md:grid-cols-2 px-4 mx-auto max-w-screen text-center my-8 gap-8 justify-center px-24">
                         <h2 className="row-span-1 my-16 text-3xl font-semibold tracking-tight text-gray-900 text-heading">¿Por qué nace Scouteca?</h2>
-                        <div className="row-span-5 h-75 my-auto bg-center bg-center bg-cover bg-dark bg-[url('/booklap.png')] bg-blend-overlay object-scale-down"></div>
+                        <div className="row-span-5 h-100 my-auto bg-center bg-center bg-contain bg-no-repeat bg-dark bg-[url('/23.png')] bg-blend-overlay"></div>
                         <p className="row-span-1 text-base font-normal text-gray-800 md:text-lg sm:px-16 md:px-2 mb-8 text-left font-semibold">
                             Durante años, muchos scouters, dirigentes y jóvenes han enfrentado el mismo reto: encontrar el documento correcto
                             en el momento correcto. Los manuales cambian, las circulares se actualizan, los programas evolucionan, y no siempre
@@ -51,7 +51,7 @@ export default function About() {
                     </div>
 
                     <div className="grid px-4 mx-auto max-w-screen text-center mb-12 gap-8 justify-center  md:grid-cols-2  px-24">
-                        <div className="row-span-5 h-150 my-auto bg-center bg-center bg-cover bg-dark bg-[url('/campfire.png')] bg-blend-overlay object-scale-down"></div>
+                        <div className="row-span-5 h-100 my-auto bg-center bg-center bg-contain bg-no-repeat bg-dark bg-[url('/34.png')] bg-blend-overlay"></div>
                         <h2 className="row-span-1 my-16 text-3xl font-semibold tracking-tight text-gray-900 text-heading">Una solución creada desde la experiencia</h2>
                         <p className="row-span-1 text-base font-normal text-gray-800 md:text-lg sm:px-16 md:px-2 mb-8 text-left font-semibold">
                             Como beneficiario del escultismo, viví de primera mano la importancia de la información bien organizada. Sé lo que
@@ -65,6 +65,8 @@ export default function About() {
                             actualizados, permitiendo que scouters, jóvenes y equipos administrativos trabajen de forma más simple, ágil y organizada.
                         </p>
                     </div>
+                </div>
+                <div className="pb-12 bg-gradient-to-b from-gray-200 to-violet-900">
                     <div className="flex flex-col px-4 mx-auto max-w-screen text-center mb-12 gap-8 justify-center px-24">
                         <h2 className="my-16 text-3xl font-semibold tracking-tight text-gray-900 text-heading">¿Qué encontrarás dentro de Scouteca?</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 flex-row px-4 mx-auto max-w-screen text-center mb-12 gap-8 justify-center">
@@ -114,35 +116,27 @@ export default function About() {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col px-4 mx-auto max-w-screen text-center mb-12 gap-8 justify-center px-24 -mt-16">
-                            <h2 className="my-16 text-3xl font-semibold tracking-tight text-gray-900 text-heading">Un proyecto que sigue creciendo</h2>
-                            <p className="text-base font-normal text-gray-800 md:text-lg sm:px-16 md:px-2 mb-8 text-center font-semibold">
-                                Scouteca no es un archivo estático. Es un proyecto vivo que evoluciona con las necesidades del movimiento. Hoy facilita el
-                                acceso a los documentos Scout de Guatemala; mañana será una herramienta integral que acompañará a scouters y jóvenes en su
-                                proceso formativo.
-                            </p>
-                            <p className="text-base font-normal text-gray-800 md:text-lg sm:px-16 md:px-2 mb-8 text-center font-semibold">
-                                El escultismo nos enseñó a dejar el mundo en mejores condiciones de como lo encontramos. Esta plataforma es mi manera de
-                                aportar a esa misión: ofreciendo una herramienta que ahorra tiempo, reduce errores, agiliza procesos y fortalece a cada
-                                persona que desea servir mejor.
-                            </p>
-                        </div>
+
+                    </div>
+                </div>
+                <div className="pb-12 bg-gray-200 ">
+                    <div className="flex flex-col px-4 mx-40 max-w-screen text-center mb-12 gap-8 justify-center px-24 -mt-16">
+                        <h2 className="my-16 text-3xl font-semibold tracking-tight text-gray-900 text-heading">Un proyecto que sigue creciendo</h2>
+                        <div className="row-span-5 h-100 my-auto bg-center bg-center bg-contain bg-no-repeat bg-dark bg-[url('/31.png')] bg-blend-overlay"></div>
+                        <p className="text-base font-normal text-gray-800 md:text-lg sm:px-16 md:px-2 mb-8 text-center font-semibold">
+                            Scouteca no es un archivo estático. Es un proyecto vivo que evoluciona con las necesidades del movimiento. Hoy facilita el
+                            acceso a los documentos Scout de Guatemala; mañana será una herramienta integral que acompañará a scouters y jóvenes en su
+                            proceso formativo.
+                        </p>
+                        <p className="text-base font-normal text-gray-800 md:text-lg sm:px-16 md:px-2 mb-8 text-center italic">
+                            El escultismo nos enseñó a dejar el mundo en mejores condiciones de como lo encontramos. Esta plataforma es mi manera de
+                            aportar a esa misión: ofreciendo una herramienta que ahorra tiempo, reduce errores, agiliza procesos y fortalece a cada
+                            persona que desea servir mejor.
+                        </p>
                     </div>
                 </div>
             </section >
 
         </div >
     )
-}
-{
-    /*
-    
-                            <p className="text-base font-normal text-white md:text-xl sm:px-16 lg:px-24 mb-16">
-                                Scouteca es mi forma de retribuir lo que el escultismo me dio cuando fui beneficiario del Movimiento Scout en
-                                Guatemala: oportunidades, valores, amistades y un sentido de servicio que marcó mi vida. Esta plataforma no solo
-                                organiza documentos scout de Guatemala, también honra el espíritu de ayudar al prójimo a través de soluciones
-                                prácticas y modernas.
-
-                            </p>
-                            */
 }
