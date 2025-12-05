@@ -51,7 +51,7 @@ export default function Dashboard() {
                         key={Event.id_event}
                         className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-shadow hover:shadow-lg"
                     >
-                        <a href={Event.information} target="_blank" rel="noopener noreferrer">
+                        <a href={Event.post} target="_blank" rel="noopener noreferrer">
                             <div className="relative w-full aspect-4/3 overflow-hidden rounded-t-2xl">
                                 <Image
                                     src={Event.post}
@@ -73,28 +73,33 @@ export default function Dashboard() {
                                 <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
                                     {Event.description}
                                 </p>
-                                <a
-                                    href={Event.information}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                    Ficha del evento
-                                    <svg
-                                        className="w-4 h-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 14 10"
-                                    >
-                                        <path
-                                            stroke="currentColor"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M1 5h12m0 0L9 1m4 4L9 9"
-                                        />
-                                    </svg>
-                                </a>
+                                {
+                                    (Event.information === "NONE" ? (
+                                        <a
+                                            href={Event.information}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                                        >
+                                            Ficha del evento
+                                            <svg
+                                                className="w-4 h-4"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 14 10"
+                                            >
+                                                <path
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M1 5h12m0 0L9 1m4 4L9 9"
+                                                />
+                                            </svg>
+                                        </a>
+
+                                    ) : null)
+                                }
                             </div>
 
                         </div>

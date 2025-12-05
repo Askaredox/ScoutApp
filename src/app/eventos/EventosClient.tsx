@@ -13,7 +13,6 @@ import { Event, Event_response, Metadata } from '@/lib/interfaces';
 import { request } from '@/lib/request-utils';
 import { formatDateToYYYYMMDD, upload_presigned_url } from '@/lib/utils';
 import { useRef, useState } from 'react';
-import DatePicker from '../_components/DatePicker';
 
 
 export default function Eventos() {
@@ -26,7 +25,7 @@ export default function Eventos() {
     const [eventinformation, setEventinformation] = useState<File | null>(null);
     const eventPortraitRef = useRef(null);
     const eventInformationRef = useRef(null);
-    const [eventexpire, setEventexpire] = useState<string>((Date.now().toString().slice(0, 10)));
+    const [eventexpire, setEventexpire] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState("");
 
     const [updateEventModal, setUpdateEventModal] = useState<boolean>(false);
@@ -150,11 +149,15 @@ export default function Eventos() {
 
     async function newEvent(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        if (!eventportrait) {
+            alert("Debe subir una imagen de portada");
+            return;
+        }
         const data = {
             title: eventsubject,
             description: eventshort_description,
             expire_date: eventexpire,
-            image_name: eventportrait?.name,
+            image_name: eventportrait.name,
             information_name: eventinformation?.name,
         };
         await request('POST', '/event', "application/json", JSON.stringify(data))
@@ -364,11 +367,7 @@ export default function Eventos() {
 
                         <div className="mb-4">
                             <label htmlFor="expire" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de expiración</label>
-                            <input type="date" id="expire" name="expire" value={formatDateToYYYYMMDD(new Date(Number(eventexpire) * 1000))} onChange={(e) => console.log(e.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
-                        </div>
-
-                        <div>
-                            <DatePicker title="Expiración" />
+                            <input type="date" id="expire" name="expire" value={eventexpire} onChange={(e) => setEventexpire(e.target.value)} className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary-500" required />
                         </div>
 
                         <div className="mb-4">
@@ -460,8 +459,8 @@ export default function Eventos() {
                                         </label>
                                         <input
                                             type="date"
-                                            value={formatDateToYYYYMMDD(new Date(Number(updateEventexpire) * 1000))}
-                                            onChange={(e) => setUpdateEventexpire(((new Date(e.target.value).getTime() + 1000 * 60 * 60 * 24) / 1000).toString())}
+                                            value={eventexpire}
+                                            onChange={(e) => setEventexpire(e.target.value)}
                                             name="expire"
                                             id="expire"
                                             className="w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
