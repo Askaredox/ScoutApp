@@ -39,7 +39,7 @@ export const request = async (
 
 };
 
-const request_data = async (
+export const request_data = async (
     method: string,
     path: string,
     content_type: string = 'application/json',

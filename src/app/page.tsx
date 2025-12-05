@@ -1,106 +1,56 @@
-'use client';
+'use client'
 
-import Loader from '@/app/_components/Loader';
-import NavBar from '@/app/_components/NavBar';
-import Image from "next/image";
+import MainNav from "@/app/_components/MainNav";
+import { request_data } from "@/lib/request-utils";
+import { useEffect, useState } from "react";
 
-import { Event, Event_response } from "@/lib/interfaces";
-import { request } from '@/lib/request-utils';
-import { useState } from "react";
 
-export default function Admin() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [ready, setReady] = useState<boolean>(false);
-
-  function update_events() {
-    setReady(false);
-    request('GET', '/event', 'application/json')
-      .then((event_data) => {
-        const events: Event[] = [];
-        event_data.forEach((data: Event_response) => {
-          const a_data = {
-            id_event: data.PK,
-            title: data.title,
-            description: data.description,
-            post: data.post,
-            information: data.information,
-            created: data.created,
-            expire_date: data.expire_date
-          }
-          events.push(a_data);
-        });
-        setEvents(events);
-        setReady(true);
-      })
-      .catch((err) => console.log(err))
+export default function Example() {
+  const [message, setMessage] = useState('');
+  const [version, setVersion] = useState('');
+  function getMessage() {
+    request_data('GET', '/', 'application/json', null, false).then((data) => {
+      const body = data.data;
+      setMessage(body.message);
+      setVersion(body.version);
+    });
   }
 
+  useEffect(() => {
+    getMessage();
+  }, []);
 
   return (
-    <main>
-      {/* Botón hamburguesa visible solo en móviles */}
-      <NavBar callback={update_events} />
+    <div className="bg-gray-900 h-screen overflow-hidden">
+      <MainNav />
 
-      <div className="p-6 pt-20 md:ml-56 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {!ready && (
-          <Loader />
-        )}
-        {events.map((Event) => (
-          <div
-            key={Event.id_event}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 transition-shadow hover:shadow-lg"
-          >
-            <a href={Event.information} target="_blank" rel="noopener noreferrer">
-              <div className="relative w-full aspect-4/3 overflow-hidden rounded-t-2xl">
-                <Image
-                  src={Event.post}
-                  alt={Event.title}
-                  fill
-                  className="object-contain transition-transform duration-300 hover:scale-105"
-                />
+      <section className="bg-center bg-cover bg-dark  bg-[url('/fondo1.jpeg')] bg-blend-overlay bg-scroll object-none h-full ">
+        <div className="px-4 mx-auto max-w-screen text-center sm:py-36 md:py-48 py-36 backdrop-blur-xs backdrop-brightness-30 h-full">
+          {message && (
+            <div className="w-auto inline-flex items-center p-1 pe-2 mb-4 text-sm text-fg-brand-strong rounded-full bg-brand-softer border border-brand-subtle " role="alert">
+              <span className="text-fg-brand-strong py-1 px-2 rounded-full border bg-gray-800 motion-safe:animate-bounce -rotate-20">Nuevo</span>
+              <div className="mx-4 text-sm">
+                {message}
               </div>
-            </a>
-            <div className="p-5 flex flex-col justify-between h-full">
-              <div className="mb-4">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">
-                  {Event.title}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-
-                  📅 {new Date(Number(Event.expire_date) * 1000).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
-                  {Event.description}
-                </p>
-                <a
-                  href={Event.information}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  Ficha del evento
-                  <svg
-                    className="w-4 h-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 14 10"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M1 5h12m0 0L9 1m4 4L9 9"
-                    />
-                  </svg>
-                </a>
-              </div>
-
             </div>
+          )}
+          <h1 className="my-8 text-4xl font-bold tracking-tighter text-white md:text-5xl lg:text-6xl">Scouteca: La Biblioteca Digital Scout de Guatemala</h1>
+          <p className="text-base font-normal text-white md:text-xl sm:px-16 lg:px-48 my-18">
+            Scouteca es la plataforma digital que reúne los archivos, manuales, circulares, actividades y herramientas
+            oficiales del escultismo en Guatemala. Todo organizado, accesible y listo para líderes y jóvenes.
+          </p>
+          <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center my-6 sm:space-y-0 md:space-x-4">
+
+            <a type="button" href="/signup" className="text-white bg-gradient-to-br cursor-pointer from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-full text-lg px-5 py-2.5 text-center leading-8 ">Únete a Scouteca <span aria-hidden="true">&rarr;</span></a>
           </div>
-        ))}
-      </div>
-    </main>
-  );
+        </div>
+      </section>
+      <footer className="absolute inset-x-0 bottom-0 rounded-base shadow-xs">
+        <div className="w-full max-w-screen-xl mx-auto p-4 md:pb-8">
+          <span className="block text-sm text-body text-center">Made with ❤️ by <a href="https://github.com/Askaredox" target="_blank" className="hover:underline">Andrés Carvajal</a>.</span>
+          <span className="block text-sm text-body text-center">Versión: {version}</span>
+        </div>
+      </footer>
+    </div>
+  )
 }
