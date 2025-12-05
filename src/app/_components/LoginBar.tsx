@@ -1,9 +1,7 @@
-import Cookies from "js-cookie";
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { AccessToken } from '@/lib/auth';
-import { User } from '@/lib/interfaces';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
@@ -12,27 +10,11 @@ type LoginBarProps = {
 };
 
 const LoginBar: React.FC<LoginBarProps> = () => {
-    const [sidenav, setSidenav] = React.useState<boolean>(false);
     const { replace } = useRouter();
 
-    function get_avatar(user: User) {
-        if (user.avatar === null || user.avatar === "NONE") {
-            return 'https://avatars.githubusercontent.com/u/' + user.sub.replace(/\D/g, "").slice(0, 8);
-        }
-        else {
-            return user.avatar;
-        }
-    }
     function login(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         e.preventDefault();
         replace("/login");
-    }
-
-    function logout() {
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-
-        replace("/logout");
     }
 
     return (

@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect } from 'react';
 
 
@@ -30,14 +32,16 @@ const MainNav: React.FC = () => {
 
             <nav className={"fixed w-full z-20 top-0 start-0 border-b border-default " + (scrolled ? 'bg-transparent' : 'bg-white') + " transition-colors duration-300"}>
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                    <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse cursor-pointer">
-                        <img
+                    <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse cursor-pointer">
+                        <Image
                             alt="Scouteca Logo"
                             src="logo.svg"
                             className="h-8 w-auto"
+                            width={32}
+                            height={32}
                         />
                         <span className={"self-center text-xl text-heading font-semibold whitespace-nowrap " + (scrolled ? 'text-white' : 'text-gray-900')}>Scouteca</span>
-                    </a>
+                    </Link>
                     <div className={"flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse " + (scrolled ? 'text-white' : 'text-gray-900')}>
                         <a href="/login" type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-xl box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
                             Ingresar
