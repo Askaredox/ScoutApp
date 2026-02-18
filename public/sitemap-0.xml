@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>http://localhost:3000/file/20260211_un-extrano-archivo-de-confianza</loc><lastmod>2026-02-16T23:50:41.462Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/file/24ca5de214ab413b847af8b66bb41f27</loc><lastmod>2026-02-16T23:50:41.463Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/file/3dd3c4eabcd048f69b316d1e950d71f8</loc><lastmod>2026-02-16T23:50:41.463Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/file/4a4626d83f3a4c6eb7575209cfd28210</loc><lastmod>2026-02-16T23:50:41.463Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/about</loc><lastmod>2026-02-18T19:08:55.628Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/auth</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/biblioteca-editor</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/biblioteca</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/contact</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/dashboard</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/eventos</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/features</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/login</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/logout</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/profile</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/scouts</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/signup</loc><lastmod>2026-02-18T19:08:55.629Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/file/20260211_un-extrano-archivo-de-confianza</loc><lastmod>2026-02-18T19:09:00.339Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/file/24ca5de214ab413b847af8b66bb41f27</loc><lastmod>2026-02-18T19:09:00.339Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/file/3dd3c4eabcd048f69b316d1e950d71f8</loc><lastmod>2026-02-18T19:09:00.339Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/file/4a4626d83f3a4c6eb7575209cfd28210</loc><lastmod>2026-02-18T19:09:00.339Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
