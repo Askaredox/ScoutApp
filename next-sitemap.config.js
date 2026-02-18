@@ -4,7 +4,7 @@ module.exports = {
     generateRobotsTxt: true,
     changefreq: 'weekly',
     sitemapSize: 7000,
-    additionalPaths: async (config) => {
+    additionalPaths: async () => {
     // Fetch slugs from your CMS/DB:
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
     const res = await fetch(`${backendUrl}/file`);
