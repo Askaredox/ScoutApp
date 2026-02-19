@@ -11,7 +11,7 @@ import Image from "next/image";
 
 import { File_data, Folder_data } from "@/lib/interfaces";
 import { request } from "@/lib/request-utils";
-import { create_thumbnail, upload_presigned_url } from "@/lib/utils";
+import { sleep, upload_presigned_url } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
 function get_breadcrumb(
@@ -200,26 +200,24 @@ export default function AdminBiblioteca() {
       alert("No se ha seleccionado un archivo");
       return;
     }
-    const thumbnail = await create_thumbnail(newFileD);
-    if (thumbnail == null) {
-      alert("No se ha podido crear la miniatura del archivo");
-      return;
-    }
 
     const data = {
       id_parent_folder: parent_id,
       name: folder_name,
-      can_download: newFolderCanDownload,
-      can_view: newFolderCanView,
+      can_download: newFileCanDownload,
+      can_view: newFileCanView,
       description: newFileDescription,
     };
+
     await request("POST", "/file", "application/json", JSON.stringify(data))
       .then(async (folder_data) => {
         await upload_presigned_url(newFileD, folder_data.file_data.url);
-        await upload_thumbnail(thumbnail, folder_data.thumbnail_data.url);
         alert("Archivo subido correctamente");
-        update_folders();
         setNewFileModal(false);
+        setReady(false);
+        await sleep(3000);
+        setReady(true);
+        update_folders();
         resetFileDRef();
         setNewFileName("");
         setNewFileDescription("");
@@ -227,11 +225,6 @@ export default function AdminBiblioteca() {
         setNewFileCanDownload(true);
       })
       .catch((err) => console.log(err));
-  }
-  async function upload_thumbnail(file: File, url: string) {
-    if (file.type == "image/jpeg" || file.type == "image/png") {
-      await upload_presigned_url(file, url);
-    }
   }
 
   async function view_file(file_data: File_data) {

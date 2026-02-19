@@ -17,13 +17,6 @@ const nextConfig = {
   images: {
     remotePatterns,
   },
-  webpack(config) {
-    config.module.rules.push({
-      test: /pdf\.worker\.entry\.js$/,
-      use: { loader: 'worker-loader' },
-    });
-    return config;
-  },
 };
 
 module.exports = nextConfig;
