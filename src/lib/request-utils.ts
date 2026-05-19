@@ -1,74 +1,137 @@
 import { AccessToken, refreshAuthToken } from "@/lib/auth";
-import axios from "axios";
+import axios, { AxiosError, Method } from "axios";
 import Cookies from "js-cookie";
 
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+type RequestBody =
+    | Record<string, unknown>
+    | string
+    | URLSearchParams
+    | null;
 
 export const request = async (
-    method: string,
+    method: Method,
     path: string,
-    content_type: string = 'application/json',
-    body: string | null = null,
+    content_type: string = "application/json",
+    body: RequestBody = null,
     auth: boolean = true,
 ) => {
-    const response = await request_data(method, path, content_type, body, auth)
-        .catch(async (e) => {
-            console.log(e)
-            if (await refreshAuthToken()) {
-                return await request_data(method, path, content_type, body, auth);
-            }
-            else {
-                Cookies.remove("accessToken");
-                Cookies.remove("refreshToken");
-                Cookies.remove("avatar");
-                window.location.href = "/logout";
-            }
+    try {
+        const response = await request_data(
+            method,
+            path,
+            content_type,
+            body,
+            auth,
+        );
+
+        return response.data;
+    } catch (error) {
+        const axiosError = error as AxiosError;
+
+        const status = axiosError.response?.status;
+        console.log("Request failed:", {
+            path,
+            method,
+            auth,
+            status,
+            message: axiosError.message,
+            hasResponse: Boolean(axiosError.response),
+            responseData: axiosError.response?.data,
         });
 
-    if (!response) return;
 
-    // Check if response is ok
-    if (response.status < 200 || response.status >= 300) {
-        const errorText = await response.data;
-        throw new Error(`HTTP Error: ${response?.status} - ${errorText}`);
+        const shouldRefresh =
+            auth &&
+            status === 401;
+
+        if (!shouldRefresh) {
+            throw error;
+        }
+
+        const refreshed = await refreshAuthToken();
+
+        if (!refreshed) {
+            AccessToken.clearToken();
+
+            Cookies.remove("access_token");
+            Cookies.remove("avatar");
+
+            window.location.href = "/logout";
+            return;
+        }
+
+        const retryResponse = await request_data(
+            method,
+            path,
+            content_type,
+            body,
+            auth,
+        );
+
+        return retryResponse.data;
     }
-
-    // Try to parse response as JSON
-    return await response.data; // Handle empty response cases
-
 };
 
 export const request_data = async (
-    method: string,
+    method: Method,
     path: string,
-    content_type: string = 'application/json',
-    body: string | null = null,
+    content_type: string = "application/json",
+    body: RequestBody = null,
     auth: boolean = true,
 ) => {
-    const token = auth ? AccessToken.getToken() : '';
-
-    const headers: { 'Content-Type': string; 'Authorization'?: string; } = {
-        'Content-Type': content_type,
-        'Authorization': auth ? `Bearer ${token}` : undefined,
+    const headers: Record<string, string> = {
+        "Content-Type": content_type,
     };
 
-    // Format the body correctly
-    let formattedBody = body;
-    if (content_type === "application/json" && body && typeof body !== "string") {
-        formattedBody = JSON.stringify(body);
-    } else if (content_type === "application/x-www-form-urlencoded" && body && typeof body !== "string") {
-        formattedBody = new URLSearchParams(body).toString();
+    if (auth) {
+        const token = AccessToken.getToken();
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
     }
 
-    const response = await axios({
-        url: `${BACKEND_URL}${path}`,
-        method: method,
-        headers: headers,
-        data: method !== "GET" ? formattedBody : undefined, // GET requests shouldn't have a body
-        withCredentials: true, // Include cookies in requests
-    });
-    // console.log(`Request to ${path} returned status ${response?.status}`);
+    const formattedBody = formatBody(method, content_type, body);
 
-    return response;
-}
+    return await axios({
+        url: `${BACKEND_URL}${path}`,
+        method,
+        headers,
+        data: method !== "GET" ? formattedBody : undefined,
+        withCredentials: true,
+    });
+};
+
+const formatBody = (
+    method: Method,
+    content_type: string,
+    body: RequestBody,
+): string | URLSearchParams | undefined => {
+    if (method === "GET" || !body) {
+        return undefined;
+    }
+
+    if (content_type === "application/json") {
+        return typeof body === "string"
+            ? body
+            : JSON.stringify(body);
+    }
+
+    if (content_type === "application/x-www-form-urlencoded") {
+        if (body instanceof URLSearchParams) {
+            return body;
+        }
+
+        if (typeof body === "string") {
+            return body;
+        }
+
+        return new URLSearchParams(
+            body as Record<string, string>,
+        ).toString();
+    }
+
+    return body as string;
+};

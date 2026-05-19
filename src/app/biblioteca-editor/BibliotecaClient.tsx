@@ -117,9 +117,13 @@ export default function AdminBiblioteca() {
   const [deleteFileModal, setDeleteFileModal] = useState<boolean>(false);
   const [deleteFolderModal, setDeleteFolderModal] = useState<boolean>(false);
   const [ready, setReady] = useState(false);
+  const lastUrlRef = useRef(url);
 
   useEffect(() => {
-    update_folders();
+    if (lastUrlRef.current !== url) {
+      update_folders();
+    }
+    lastUrlRef.current = url;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
