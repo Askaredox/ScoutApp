@@ -11,7 +11,7 @@ export default function Example() {
 
   function getMessage() {
     request("GET", "/", "application/json", null, false).then((data) => {
-      const body = data.data;
+      const body = data;
       setMessage(body.message);
       setVersion(body.version);
     });
