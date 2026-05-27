@@ -6,9 +6,9 @@ import NavBar from "@/app/_components/NavBar";
 import UserModal from "@/app/_components/UserModal";
 import Image from "next/image";
 
-import { getMe, refreshAuthToken } from "@/lib/auth";
+import { getMe } from "@/lib/auth";
 import { User } from "@/lib/interfaces";
-import { request } from "@/lib/request-utils";
+import { refreshAuthToken, request } from "@/lib/request-utils";
 import { upload_presigned_url } from "@/lib/utils";
 import { useState } from "react";
 

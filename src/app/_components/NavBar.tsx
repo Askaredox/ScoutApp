@@ -22,13 +22,6 @@ const NavBar: React.FC<NavBarProps> = ({
   const [showUserModal, setShowUserModal] = React.useState(false);
   const hasProccessedAuth = React.useRef(false);
 
-  useEffect(() => {
-    if (!hasProccessedAuth.current) do_action();
-    hasProccessedAuth.current = true;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   async function do_action() {
     const me = await getMe();
     console.log("User data:", me);
@@ -42,6 +35,12 @@ const NavBar: React.FC<NavBarProps> = ({
       callback();
     }
   }
+  useEffect(() => {
+    if (!hasProccessedAuth.current) do_action();
+    hasProccessedAuth.current = true;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function get_avatar(user: User) {
     if (user.avatar === null || user.avatar === "NONE") {

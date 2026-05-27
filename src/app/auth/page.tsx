@@ -10,14 +10,6 @@ const Auth = () => {
   const router = useRouter();
   const hasProcessedAuth = useRef(false);
 
-  useEffect(() => {
-    if (hasProcessedAuth.current) return;
-
-    hasProcessedAuth.current = true;
-    exchangeCodeForSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const exchangeCodeForSession = async () => {
     const urlParams = new URLSearchParams(window.location.search);
 
@@ -40,7 +32,7 @@ const Auth = () => {
         }),
         true,
       ).then(() => {
-        const me = getMe().then((me) => {
+        getMe().then((me) => {
           if (!me) {
             throw new Error("User session could not be verified");
           }
@@ -55,6 +47,13 @@ const Auth = () => {
       router.replace("/login");
     }
   };
+  useEffect(() => {
+    if (hasProcessedAuth.current) return;
+
+    hasProcessedAuth.current = true;
+    exchangeCodeForSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <Loader />;
 };
