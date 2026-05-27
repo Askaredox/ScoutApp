@@ -1,10 +1,23 @@
 import { getMe } from "@/lib/auth";
+import { User } from "@/lib/interfaces";
 import Image from "next/image";
 import Link from "next/link";
+import React, { useEffect } from "react";
 import LoginButton from "./LoginButton";
 
-const LoginBar = async () => {
-  const user = await getMe();
+const LoginBar = () => {
+  const hasProccessedAuth = { current: false };
+  const [user, setUser] = React.useState<User | undefined>(undefined);
+
+  useEffect(() => {
+    if (!hasProccessedAuth.current)
+      getMe().then((me) => {
+        setUser(me || undefined);
+      });
+    hasProccessedAuth.current = true;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
