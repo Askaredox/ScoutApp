@@ -1,7 +1,7 @@
 "use client";
 
 import MainNav from "@/app/_components/MainNav";
-import { request_data } from "@/lib/request-utils";
+import { request } from "@/lib/request-utils";
 import { useEffect, useRef, useState } from "react";
 
 export default function Example() {
@@ -10,7 +10,7 @@ export default function Example() {
   const hasProccessedCode = useRef(false);
 
   function getMessage() {
-    request_data("GET", "/", "application/json", null, false).then((data) => {
+    request("GET", "/", "application/json", null, false).then((data) => {
       const body = data.data;
       setMessage(body.message);
       setVersion(body.version);

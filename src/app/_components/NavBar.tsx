@@ -1,9 +1,8 @@
 import UserModal from "@/app/_components/UserModal";
-import Cookies from "js-cookie";
 import Image from "next/image";
 import Link from "next/link";
 
-import { AccessToken, getMe, refreshAuthToken } from "@/lib/auth";
+import { getMe } from "@/lib/auth";
 import { User } from "@/lib/interfaces";
 import { request } from "@/lib/request-utils";
 import { useRouter } from "next/navigation";
@@ -30,11 +29,12 @@ const NavBar: React.FC<NavBarProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function do_action() {
-    if (!AccessToken.is_authenticated()) {
+  async function do_action() {
+    const me = await getMe();
+    console.log("User data:", me);
+    if (!me) {
       replace("/login");
     } else {
-      const me = AccessToken.get_user();
       setUser(me);
       if (me.name === null || me.name === undefined || me.name === "NONE") {
         setShowUserModal(true);
@@ -59,9 +59,6 @@ const NavBar: React.FC<NavBarProps> = ({
   }
 
   function logout() {
-    Cookies.remove("access_token");
-    Cookies.remove("refresh_token");
-
     replace("/logout");
   }
 
@@ -86,12 +83,16 @@ const NavBar: React.FC<NavBarProps> = ({
       JSON.stringify(data),
     ).then(async () => {
       const me = await getMe();
+      if (!me) {
+        logout();
+        return;
+      }
       me.name = name;
       me.groups = group;
       me.section = section;
 
       setUser(me);
-      await refreshAuthToken();
+      // await refreshAuthToken();
       setShowUserModal(false);
     });
   }

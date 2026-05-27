@@ -1,53 +1,58 @@
 "use client";
 
 import Loader from "@/app/_components/Loader";
-
-import { AccessToken, getMe } from "@/lib/auth";
+import { getMe } from "@/lib/auth";
 import { request } from "@/lib/request-utils";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const Auth = () => {
-  const { push } = useRouter();
-  const hasProccessedAuth = React.useRef(false);
+  const router = useRouter();
+  const hasProcessedAuth = useRef(false);
 
   useEffect(() => {
-    if (hasProccessedAuth.current) return;
+    if (hasProcessedAuth.current) return;
 
-    exchangeCodeForToken();
-    hasProccessedAuth.current = true;
+    hasProcessedAuth.current = true;
+    exchangeCodeForSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const exchangeCodeForToken = async () => {
+  const exchangeCodeForSession = async () => {
     const urlParams = new URLSearchParams(window.location.search);
+
     const code = urlParams.get("code");
     const state = urlParams.get("state");
+
     if (!code) {
-      push("/login");
+      router.replace("/login");
       return;
     }
 
     try {
-      const response = await request(
+      request(
         "POST",
         "/token",
         "application/json",
         JSON.stringify({
-          code: code,
+          code,
           redirect_uri: `${window.location.origin}/auth`,
         }),
-        false,
-      );
-      AccessToken.setToken(response.idToken);
-      const me = await getMe();
-      AccessToken.setAttrs(me.avatar, me.name);
+        true,
+      ).then(() => {
+        const me = getMe().then((me) => {
+          if (!me) {
+            throw new Error("User session could not be verified");
+          }
 
-      if (state) push(decodeURIComponent(state));
-      else push("/dashboard");
+          const redirectTo = getSafeRedirectPath(state);
+
+          router.replace(redirectTo);
+        });
+      });
     } catch (error) {
       console.error("Token exchange failed", error);
-      push("/login");
+      router.replace("/login");
     }
   };
 
@@ -55,3 +60,25 @@ const Auth = () => {
 };
 
 export default Auth;
+
+function getSafeRedirectPath(state: string | null): string {
+  if (!state) {
+    return "/dashboard";
+  }
+
+  try {
+    const decodedState = decodeURIComponent(state);
+
+    if (!decodedState.startsWith("/")) {
+      return "/dashboard";
+    }
+
+    if (decodedState.startsWith("//")) {
+      return "/dashboard";
+    }
+
+    return decodedState;
+  } catch {
+    return "/dashboard";
+  }
+}

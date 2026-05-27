@@ -1,7 +1,7 @@
 "use client";
 
 import Loader from "@/app/_components/Loader";
-import { AccessToken } from "@/lib/auth";
+import { getMe } from "@/lib/auth";
 
 import {
   COGNITO_CLIENT_ID,
@@ -17,18 +17,20 @@ function SignupPage() {
   const state = searchParams.get("state");
 
   useEffect(() => {
-    if (AccessToken.is_authenticated()) {
-      window.location.href = "/dashboard";
-    } else {
-      const loginUrl =
-        `${COGNITO_DOMAIN}/signup` +
-        `?client_id=${COGNITO_CLIENT_ID}` +
-        `&response_type=${COGNITO_RESPONSE_TYPE}` +
-        `&redirect_uri=${encodeURIComponent(COGNITO_REDIRECT_URI + "/auth")}` +
-        (state ? `&state=${state}` : "") +
-        `&lang=es`;
-      window.location.href = loginUrl;
-    }
+    getMe().then((me) => {
+      if (me) {
+        window.location.href = "/dashboard";
+      } else {
+        const loginUrl =
+          `${COGNITO_DOMAIN}/signup` +
+          `?client_id=${COGNITO_CLIENT_ID}` +
+          `&response_type=${COGNITO_RESPONSE_TYPE}` +
+          `&redirect_uri=${encodeURIComponent(COGNITO_REDIRECT_URI + "/auth")}` +
+          (state ? `&state=${state}` : "") +
+          `&lang=es`;
+        window.location.href = loginUrl;
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

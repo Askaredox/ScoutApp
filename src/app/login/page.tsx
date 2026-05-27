@@ -1,7 +1,7 @@
 "use client";
 
 import Loader from "@/app/_components/Loader";
-import { AccessToken } from "@/lib/auth";
+import { getMe } from "@/lib/auth";
 
 import {
   COGNITO_CLIENT_ID,
@@ -18,9 +18,14 @@ function LoginPage() {
 
   useEffect(() => {
     console.log("Attempting to refresh auth token...");
-    if (AccessToken.is_authenticated()) {
-      window.location.href = "/dashboard";
-    } else {
+    getMe().then((me) => {
+      if (me) {
+        console.log(
+          "User is already authenticated, redirecting to dashboard...",
+        );
+        window.location.href = "/dashboard";
+        return;
+      }
       const loginUrl =
         `${COGNITO_DOMAIN}/login` +
         `?client_id=${COGNITO_CLIENT_ID}` +
@@ -29,7 +34,7 @@ function LoginPage() {
         (state ? `&state=${state}` : "") +
         `&lang=es`;
       window.location.href = loginUrl;
-    }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
