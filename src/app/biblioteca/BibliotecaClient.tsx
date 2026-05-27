@@ -9,7 +9,7 @@ import Image from "next/image";
 
 import { File_data, Folder_data } from "@/lib/interfaces";
 import { request } from "@/lib/request-utils";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function get_breadcrumb(
   url: Array<{ path: string; id: string }>,
@@ -99,9 +99,13 @@ export default function Biblioteca() {
   const [folders, setFolders] = useState<Folder_data[]>([]);
   const [files, setFiles] = useState<File_data[]>([]);
   const [ready, setReady] = useState(false);
+  const lastUrlRef = useRef(url);
 
   useEffect(() => {
-    update_folders();
+    if (lastUrlRef.current !== url) {
+      update_folders();
+    }
+    lastUrlRef.current = url;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 

@@ -1,32 +1,50 @@
 "use client";
 
-import Loader from '@/app/_components/Loader';
+import Loader from "@/app/_components/Loader";
+import { getMe } from "@/lib/auth";
 
-import { COGNITO_CLIENT_ID, COGNITO_DOMAIN, COGNITO_REDIRECT_URI, COGNITO_RESPONSE_TYPE } from '@/lib/utils';
+import {
+  COGNITO_CLIENT_ID,
+  COGNITO_DOMAIN,
+  COGNITO_REDIRECT_URI,
+  COGNITO_RESPONSE_TYPE,
+} from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
 function LoginPage() {
-    const searchParams = useSearchParams();
-    const state = searchParams.get('state');
+  const searchParams = useSearchParams();
+  const state = searchParams.get("state");
 
-    useEffect(() => {
-        const loginUrl = `${COGNITO_DOMAIN}/login` +
-            `?client_id=${COGNITO_CLIENT_ID}` +
-            `&response_type=${COGNITO_RESPONSE_TYPE}` +
-            `&redirect_uri=${encodeURIComponent(COGNITO_REDIRECT_URI + '/auth')}` +
-            (state ? `&state=${state}` : '') +
-            `&lang=es`;
-        window.location.href = loginUrl;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  useEffect(() => {
+    console.log("Attempting to refresh auth token...");
+    getMe().then((me) => {
+      if (me) {
+        console.log(
+          "User is already authenticated, redirecting to dashboard...",
+        );
+        window.location.href = "/dashboard";
+        return;
+      }
+      const loginUrl =
+        `${COGNITO_DOMAIN}/login` +
+        `?client_id=${COGNITO_CLIENT_ID}` +
+        `&response_type=${COGNITO_RESPONSE_TYPE}` +
+        `&redirect_uri=${encodeURIComponent(COGNITO_REDIRECT_URI + "/auth")}` +
+        (state ? `&state=${state}` : "") +
+        `&lang=es`;
+      window.location.href = loginUrl;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    return <Loader />;
+  return <Loader />;
 }
 
 export default function Login() {
-    return (<Suspense fallback={<Loader />}>
-        <LoginPage />
+  return (
+    <Suspense fallback={<Loader />}>
+      <LoginPage />
     </Suspense>
-    );
-};
+  );
+}

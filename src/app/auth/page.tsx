@@ -1,46 +1,83 @@
 "use client";
 
 import Loader from "@/app/_components/Loader";
-
-import { AccessToken, getMe } from "@/lib/auth";
+import { getMe } from "@/lib/auth";
 import { request } from "@/lib/request-utils";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const Auth = () => {
-    const { push } = useRouter();
+  const router = useRouter();
+  const hasProcessedAuth = useRef(false);
 
-    useEffect(() => {
-        const exchangeCodeForToken = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get("code");
-            const state = urlParams.get("state");
-            if (!code) {
-                push("/login");
-                return;
-            }
+  const exchangeCodeForSession = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
 
-            try {
-                const response = await request('POST', "/token", 'application/json', JSON.stringify({ 'code': code, 'redirect_uri': `${window.location.origin}/auth` }), false);
-                AccessToken.setToken(response.idToken);
-                const me = await getMe();
-                AccessToken.setAttrs(me.avatar, me.name);
+    const code = urlParams.get("code");
+    const state = urlParams.get("state");
 
-                if (state)
-                    push(decodeURIComponent(state));
-                else
-                    push("/dashboard");
-            } catch (error) {
-                console.error("Token exchange failed", error);
-                push("/login");
-            }
-        };
+    if (!code) {
+      router.replace("/login");
+      return;
+    }
 
-        exchangeCodeForToken();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    try {
+      request(
+        "POST",
+        "/token",
+        "application/json",
+        JSON.stringify({
+          code,
+          redirect_uri: `${window.location.origin}/auth`,
+        }),
+        true,
+      ).then(() => {
+        getMe().then((me) => {
+          if (!me) {
+            throw new Error("User session could not be verified");
+          }
 
-    return <Loader />;
+          const redirectTo = getSafeRedirectPath(state);
+
+          router.replace(redirectTo);
+        });
+      });
+    } catch (error) {
+      console.error("Token exchange failed", error);
+      router.replace("/login");
+    }
+  };
+  useEffect(() => {
+    if (hasProcessedAuth.current) return;
+
+    hasProcessedAuth.current = true;
+    exchangeCodeForSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <Loader />;
 };
 
 export default Auth;
+
+function getSafeRedirectPath(state: string | null): string {
+  if (!state) {
+    return "/dashboard";
+  }
+
+  try {
+    const decodedState = decodeURIComponent(state);
+
+    if (!decodedState.startsWith("/")) {
+      return "/dashboard";
+    }
+
+    if (decodedState.startsWith("//")) {
+      return "/dashboard";
+    }
+
+    return decodedState;
+  } catch {
+    return "/dashboard";
+  }
+}
