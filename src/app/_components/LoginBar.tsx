@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import LoginButton from "./LoginButton";
 
 const LoginBar = () => {
-  const hasProccessedAuth = { current: false };
+  const hasProccessedAuth = React.useRef(false);
   const [user, setUser] = React.useState<User | undefined>(undefined);
 
   useEffect(() => {
