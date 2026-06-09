@@ -18,12 +18,13 @@ Backend serverless desarrollado en **AWS Lambda con Python**, diseñado para man
 - ✅ Manejo de usuarios
 - ✅ Manejo de avatares de usuario
 - ✅ Distinción de usuarios (scouts, scouters y administradores)
+- ✅ visualización de usuarios en administrador error
+- ✅ Pestaña de donativo
 
 ## 📌 Siguientes pasos
 
 - 🔲 Implementación de anuncios y monetización
 - 🔲 Carga de archivos dinámicos con toasters
-- 🔲 Mejora de vista de eliminación de archivo en esper
-- 🔲 Pestaña de donativo
-- 🔲 actualizar documentación
-- 🔲 visualización de usuarios en administrador error
+- 🔲 Mejora de vista de eliminación de archivo en espera
+- 🔲 actualizar documentación de clan
+- 🔲 redirección cuando un usuario no esta registrado y trata de ver un archivo, se loguea, hay error
