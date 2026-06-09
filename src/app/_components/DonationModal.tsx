@@ -1,3 +1,4 @@
+import { Donation } from "@/lib/interfaces";
 import { request } from "@/lib/request-utils";
 import React, { SetStateAction, useEffect, useState } from "react";
 import Loader from "./Loader";
@@ -9,7 +10,7 @@ type DonateModalProps = {
 
 const DonateModal: React.FC<DonateModalProps> = ({ show, setShow }) => {
   const donationRef = React.useRef<boolean>(false);
-  const [donationData, setDonationData] = useState<any>(null);
+  const [donationData, setDonationData] = useState<Donation>();
   const [ready, setReady] = useState<boolean>(false);
 
   const request_donation_data = async () => {
@@ -81,7 +82,8 @@ const DonateModal: React.FC<DonateModalProps> = ({ show, setShow }) => {
               </p>
 
               <p className="mb-4 text-body">
-                {(donationData.general &&
+                {(donationData &&
+                  donationData.general &&
                   donationData.general[0].description) ||
                   "Cargando datos de donación..."}
               </p>
@@ -89,20 +91,24 @@ const DonateModal: React.FC<DonateModalProps> = ({ show, setShow }) => {
                 <span className="font-normal">Donaciones hechas</span>
                 <span className="font-medium">
                   Q
-                  {donationData.donations &&
+                  {donationData &&
+                    donationData.donations &&
                     donationData.donations.reduce(
                       (acc: number, curr: any) => acc + curr.amount,
                       0,
                     )}{" "}
-                  de Q{donationData.general && donationData.general[0].goal} de
-                  meta
+                  de Q
+                  {donationData &&
+                    donationData.general &&
+                    donationData.general[0].goal}{" "}
+                  de meta
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
                 <div
                   className="bg-green-600 h-2.5 rounded-full"
                   style={{
-                    width: `${(donationData.donations && donationData.donations.reduce((acc: number, curr: any) => acc + curr.amount, 0) / (donationData.general && donationData.general[0].goal)) * 100}%`,
+                    width: `${donationData && (donationData.donations && donationData.donations.reduce((acc: number, curr: any) => acc + curr.amount, 0) / (donationData.general && donationData.general[0].goal)) * 100}%`,
                   }}
                 ></div>
               </div>
@@ -114,7 +120,9 @@ const DonateModal: React.FC<DonateModalProps> = ({ show, setShow }) => {
                   className="text-white bg-green-600 box-border cursor-pointer rounded-lg border border-transparent hover:bg-green-700 focus:ring-4 focus:ring-green-300 shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
                   onClick={() => {
                     window.open(
-                      donationData.general && donationData.general[0].link,
+                      donationData &&
+                        donationData.general &&
+                        donationData.general[0].link,
                       "_blank",
                     );
                   }}
