@@ -79,3 +79,19 @@ export interface User {
     sub: string;
     section: string;
 }
+
+export interface Donation_general {
+    description: string;
+    goal: number;
+    link: string;
+}
+export interface Donation_donations {
+    amount: number;
+    donor_name: string;
+    ts: number;
+}
+
+export interface Donation {
+    general: Donation_general[];
+    donations: Donation_donations[];
+}

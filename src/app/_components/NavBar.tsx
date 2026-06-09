@@ -7,6 +7,7 @@ import { User } from "@/lib/interfaces";
 import { request } from "@/lib/request-utils";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import DonationModal from "./DonationModal";
 
 type NavBarProps = {
   callback?: () => void;
@@ -20,6 +21,7 @@ const NavBar: React.FC<NavBarProps> = ({
   const [sidenav, setSidenav] = React.useState<boolean>(false);
   const { replace } = useRouter();
   const [showUserModal, setShowUserModal] = React.useState(false);
+  const [showDonationModal, setShowDonationModal] = React.useState(false);
   const hasProccessedAuth = React.useRef(false);
 
   async function do_action() {
@@ -410,12 +412,43 @@ const NavBar: React.FC<NavBarProps> = ({
                 </span>
               </a>
             </li>
+            <li>
+              <a
+                href="#"
+                target="_blank"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("Opening donation modal");
+                  setShowDonationModal(true);
+                }}
+              >
+                <svg
+                  className="h-8 w-8 text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14 3c-.6-.9-1.6-1.5-2.8-1.5-1.8 0-3.2 1.4-3.2 3.2 0 2.8 3.7 5.8 5.2 6.9.5.3 1.1.3 1.6 0 1.5-1.1 5.2-4.1 5.2-6.9 0-1.8-1.4-3.2-3.2-3.2-1.2 0-2.2.6-2.8 1.5Z" />
+
+                  <path d="M4.5 15.5 2.8 17.2H2c-.6 0-1 .4-1 1v2.3c0 .6.4 1 1 1h12.2c1 0 2-.3 2.8-.9l4.9-3.5c.6-.4.7-1.2.3-1.8s-1.2-.7-1.8-.3l-4.6 3.2h-4.3c-.6 0-1.1-.5-1.1-1.1s.5-1.1 1.1-1.1h2.8c.7 0 1.2-.5 1.2-1.2s-.5-1.2-1.2-1.2H8c-1.3 0-2.5.5-3.5 1.4Z" />
+                </svg>
+                <span className="flex-1 ms-3 whitespace-nowrap">
+                  Donaciones
+                </span>
+              </a>
+            </li>
           </ul>
         </div>
         <footer className="bg-white rounded-lg shadow-sm m-4 dark:bg-gray-800">
           <div className="w-full fixed bottom-0 left-0  mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              © 2025{" "}
+              © 2026{" "}
               <a
                 href="https://github.com/Askaredox"
                 target="_blank"
@@ -433,6 +466,7 @@ const NavBar: React.FC<NavBarProps> = ({
         setShow={setShowUserModal}
         send_data={send_user_data}
       />
+      <DonationModal show={showDonationModal} setShow={setShowDonationModal} />
     </div>
   );
 };
