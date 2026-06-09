@@ -1,4 +1,4 @@
-import { Donation } from "@/lib/interfaces";
+import { Donation, Donation_donations } from "@/lib/interfaces";
 import { request } from "@/lib/request-utils";
 import React, { SetStateAction, useEffect, useState } from "react";
 import Loader from "./Loader";
@@ -94,7 +94,8 @@ const DonateModal: React.FC<DonateModalProps> = ({ show, setShow }) => {
                   {donationData &&
                     donationData.donations &&
                     donationData.donations.reduce(
-                      (acc: number, curr: any) => acc + curr.amount,
+                      (acc: number, curr: Donation_donations) =>
+                        acc + curr.amount,
                       0,
                     )}{" "}
                   de Q
@@ -108,7 +109,7 @@ const DonateModal: React.FC<DonateModalProps> = ({ show, setShow }) => {
                 <div
                   className="bg-green-600 h-2.5 rounded-full"
                   style={{
-                    width: `${donationData && (donationData.donations && donationData.donations.reduce((acc: number, curr: any) => acc + curr.amount, 0) / (donationData.general && donationData.general[0].goal)) * 100}%`,
+                    width: `${donationData && (donationData.donations && donationData.donations.reduce((acc: number, curr: Donation_donations) => acc + curr.amount, 0) / (donationData.general && donationData.general[0].goal)) * 100}%`,
                   }}
                 ></div>
               </div>

@@ -80,15 +80,18 @@ export interface User {
     section: string;
 }
 
+export interface Donation_general {
+    description: string;
+    goal: number;
+    link: string;
+}
+export interface Donation_donations {
+    amount: number;
+    donor_name: string;
+    ts: number;
+}
+
 export interface Donation {
-    general: {
-        description: string;
-        goal: number;
-        link: string;
-    }[];
-    donations: {
-        amount: number;
-        donor_name: string;
-        ts: number;
-    }[];
+    general: Donation_general[];
+    donations: Donation_donations[];
 }
