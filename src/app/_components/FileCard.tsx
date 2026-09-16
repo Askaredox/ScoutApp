@@ -57,12 +57,21 @@ const FileCard: React.FC<FileCardProps> = ({ title, image, onClick, onDelete = (
                 )}
             </div>
             <div className="relative h-48 w-full mb-2">
-                <Image
-                    src={image}
-                    alt={title}
-                    fill
-                    className="rounded-t-lg object-contain"
-                />
+                {image ? (
+                    <Image
+                        src={image}
+                        alt={title}
+                        fill
+                        className="rounded-t-lg object-contain"
+                    />
+                ) : (
+                    // El backend puede devolver el thumbnail vacío mientras aún lo procesa
+                    // (p. ej. justo tras subir un archivo nuevo); sin esto, next/image tira
+                    // un error por recibir un src vacío.
+                    <div className="flex h-full w-full items-center justify-center rounded-t-lg bg-gray-100 dark:bg-gray-800">
+                        {getIconByExtension(title)}
+                    </div>
+                )}
             </div>
         </div>
     );

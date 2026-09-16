@@ -19,9 +19,12 @@ const CreateModal: React.FC<CreateModalProps> = ({ title, toggleModal, onClose, 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
-    onSubmit(e).then(() =>
-      handleClose()
-    );
+    onSubmit(e)
+      .then(() => handleClose())
+      // Si onSubmit rechaza, se interpreta como "no cerrar el modal" (p.ej.
+      // validación fallida): se resetea el loading para permitir reintentar
+      // sin tener que cerrar y reabrir el modal.
+      .catch(() => setLoading(false));
   }
 
   return (

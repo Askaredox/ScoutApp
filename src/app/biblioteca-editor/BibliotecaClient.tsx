@@ -11,8 +11,17 @@ import Image from "next/image";
 
 import { File_data, Folder_data } from "@/lib/interfaces";
 import { request } from "@/lib/request-utils";
-import { sleep, upload_presigned_url } from "@/lib/utils";
+import { upload_presigned_url } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+
+type NewFilePayload = {
+  id_parent_folder: string;
+  name: string;
+  can_download: boolean;
+  can_view: boolean;
+  description: string;
+};
 
 function get_breadcrumb(
   url: Array<{ path: string; id: string }>,
@@ -195,40 +204,45 @@ export default function AdminBiblioteca() {
     });
   }
 
+  async function uploadNewFile(file: File, payload: NewFilePayload) {
+    const toastId = toast.loading("Subiendo archivo...");
+    try {
+      const folder_data = await request(
+        "POST",
+        "/file",
+        "application/json",
+        JSON.stringify(payload),
+      );
+      await upload_presigned_url(file, folder_data.file_data.url);
+      toast.success("Archivo subido correctamente", { id: toastId });
+      update_folders();
+    } catch {
+      console.log("Upload failed:", { path: "/file" });
+      toast.error("No se pudo subir el archivo. Inténtalo de nuevo.", {
+        id: toastId,
+      });
+    }
+  }
+
   async function newFile(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const parent_id = "FOLDER#" + url[url.length - 1].id;
-    const folder_name = newFileName;
-    //let file_base64 = await getBase64(newFilePdf!);
     if (newFileD == null) {
-      alert("No se ha seleccionado un archivo");
-      return;
+      toast.error("No se ha seleccionado un archivo");
+      // CreateModal cierra el modal solo cuando esta promesa resuelve (ver
+      // CreateModal.tsx `handleSubmit`); al rechazarla, el modal permanece
+      // abierto y el botón "OK" vuelve a estar disponible para reintentar
+      // sin tener que cerrar y reabrir el modal.
+      throw new Error("No se ha seleccionado un archivo");
     }
 
-    const data = {
-      id_parent_folder: parent_id,
-      name: folder_name,
+    const payload: NewFilePayload = {
+      id_parent_folder: "FOLDER#" + url[url.length - 1].id,
+      name: newFileName,
       can_download: newFileCanDownload,
       can_view: newFileCanView,
       description: newFileDescription,
     };
-
-    await request("POST", "/file", "application/json", JSON.stringify(data))
-      .then(async (folder_data) => {
-        await upload_presigned_url(newFileD, folder_data.file_data.url);
-        alert("Archivo subido correctamente");
-        setNewFileModal(false);
-        setReady(false);
-        await sleep(3000);
-        setReady(true);
-        update_folders();
-        resetFileDRef();
-        setNewFileName("");
-        setNewFileDescription("");
-        setNewFileCanView(true);
-        setNewFileCanDownload(true);
-      })
-      .catch((err) => console.log(err));
+    void uploadNewFile(newFileD, payload);
   }
 
   async function view_file(file_data: File_data) {
