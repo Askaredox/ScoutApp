@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
 type FileCardProps = {
     title: string;
@@ -10,6 +10,7 @@ type FileCardProps = {
 };
 
 const FileCard: React.FC<FileCardProps> = ({ title, image, onClick, onDelete = () => { }, is_admin }) => {
+    const [imageFailed, setImageFailed] = useState(false);
     function getIconByExtension(filename: string) {
         const extension = filename.split('.').pop()?.toLowerCase();
         switch (extension) {
@@ -57,12 +58,21 @@ const FileCard: React.FC<FileCardProps> = ({ title, image, onClick, onDelete = (
                 )}
             </div>
             <div className="relative h-48 w-full mb-2">
-                <Image
-                    src={image}
-                    alt={title}
-                    fill
-                    className="rounded-t-lg object-contain"
-                />
+                {image && !imageFailed ? (
+                    <Image
+                        src={image}
+                        alt={title}
+                        fill
+                        className="rounded-t-lg object-contain"
+                        onError={() => setImageFailed(true)}
+                    />
+                ) : (
+                    // El thumbnail puede venir vacío (aún en proceso tras subir) o fallar
+                    // al cargar (objeto ya borrado en S3); en ambos casos, icono de respaldo.
+                    <div className="flex h-full w-full items-center justify-center rounded-t-lg bg-gray-100 dark:bg-gray-800">
+                        {getIconByExtension(title)}
+                    </div>
+                )}
             </div>
         </div>
     );

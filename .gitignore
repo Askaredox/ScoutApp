@@ -42,3 +42,8 @@ next-env.d.ts
 
 # tests
 /__tests__/
+.claude/
+ticket/
+# Per-ticket tests scaffolded by the `tester` skill (fase pre). Local working
+# material: promoted into __tests__/ only once the ticket is implemented.
+ticket/*/tests/
