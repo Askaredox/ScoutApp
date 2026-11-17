@@ -267,11 +267,13 @@ export default function AdminBiblioteca() {
       "DELETE",
       "/folder?id_folder=" + deleteId.split("#")[1],
       "application/json",
-    ).then(() => {
-      alert("Folder eliminado correctamente");
-      update_folders();
-      setDeleteFolderModal(false);
-    });
+    )
+      .then(() => {
+        alert("Folder eliminado correctamente");
+        update_folders();
+        setDeleteFolderModal(false);
+      })
+      .catch(() => toast.error("No se pudo eliminar el folder. Inténtalo de nuevo."));
   }
 
   function delete_file(id: string) {
@@ -289,11 +291,13 @@ export default function AdminBiblioteca() {
       "DELETE",
       "/file?id_file=" + deleteId.split("#")[1],
       "application/json",
-    ).then(() => {
-      alert("Documento eliminado correctamente");
-      update_folders();
-      setDeleteFileModal(false);
-    });
+    )
+      .then(() => {
+        alert("Documento eliminado correctamente");
+        update_folders();
+        setDeleteFileModal(false);
+      })
+      .catch(() => toast.error("No se pudo eliminar el documento. Inténtalo de nuevo."));
   }
 
   function onFileDrag(event: React.DragEvent<HTMLInputElement>) {
@@ -395,9 +399,9 @@ export default function AdminBiblioteca() {
                     </th>
                   </tr>
                 }
-                dataRowsFolders={folders.map((folder, i) => (
+                dataRowsFolders={folders.map((folder) => (
                   <tr
-                    key={i + 1}
+                    key={folder.id}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-700"
                   >
                     <td
@@ -484,9 +488,9 @@ export default function AdminBiblioteca() {
                     </td>
                   </tr>
                 ))}
-                dataRowsFiles={files.map((file, i) => (
+                dataRowsFiles={files.map((file) => (
                   <tr
-                    key={i + 1}
+                    key={file.id}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-700"
                   >
                     <td
@@ -495,12 +499,16 @@ export default function AdminBiblioteca() {
                       onClick={async () => await view_file(file)}
                     >
                       <div className="relative w-[60px] h-24">
-                        <Image
-                          src={file.thumbnail}
-                          alt={file.name}
-                          fill
-                          className="object-contain"
-                        />
+                        {file.thumbnail && (
+                          <Image
+                            src={file.thumbnail}
+                            alt={file.name}
+                            fill
+                            className="object-contain"
+                            // La miniatura puede no existir aún (recién subida) o ya no existir (recién borrada).
+                            onError={(e) => (e.currentTarget.style.display = "none")}
+                          />
+                        )}
                       </div>
                     </td>
                     <td
@@ -552,9 +560,9 @@ export default function AdminBiblioteca() {
                     </td>
                   </tr>
                 ))}
-                cardFolders={folders.map((folder, i) => (
+                cardFolders={folders.map((folder) => (
                   <FolderCard
-                    key={i}
+                    key={folder.id}
                     title={folder.name}
                     onClick={() =>
                       setUrl(
@@ -568,9 +576,9 @@ export default function AdminBiblioteca() {
                     is_admin={true}
                   />
                 ))}
-                cardFiles={files.map((file, i) => (
+                cardFiles={files.map((file) => (
                   <FileCard
-                    key={i}
+                    key={file.id}
                     title={file.name}
                     image={file.thumbnail}
                     onClick={async () => await view_file(file)}
